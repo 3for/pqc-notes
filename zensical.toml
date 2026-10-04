@@ -1,0 +1,52 @@
+[project]
+site_name = "PQC Notes"
+site_description = "后量子密码学习笔记：格密码学、LWE、ML-KEM 与 ML-DSA。"
+site_url = "https://3for.github.io/pqc-notes/"
+repo_url = "https://github.com/3for/pqc-notes"
+repo_name = "3for/pqc-notes"
+docs_dir = "docs"
+site_dir = "site"
+nav = [
+  { "首页" = "index.md" },
+  { "基础格密码学" = "basic-lattice-cryptography-notes-zh.md" },
+]
+extra_css = ["assets/stylesheets/extra.css"]
+extra_javascript = [
+  "assets/javascripts/mathjax.js",
+  "assets/vendor/mathjax/tex-chtml.js",
+]
+
+[project.theme]
+language = "zh"
+variant = "classic"
+custom_dir = "overrides"
+font = false
+# Body search highlighting can replace TeX text nodes during MathJax rendering.
+# Search result highlighting and section links still work without this feature.
+features = ["navigation.top", "navigation.tracking", "toc.follow", "toc.integrate"]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "teal"
+accent = "teal"
+toggle = { icon = "material/brightness-7", name = "切换到深色模式" }
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "teal"
+accent = "teal"
+toggle = { icon = "material/brightness-4", name = "切换到浅色模式" }
+
+[project.markdown_extensions.toc]
+permalink = true
+toc_depth = 4
+
+[project.markdown_extensions.tables]
+[project.markdown_extensions.footnotes]
+[project.markdown_extensions.attr_list]
+
+[project.markdown_extensions.pymdownx.arithmatex]
+generic = true
+smart_dollar = false
