@@ -33,13 +33,19 @@
   font-size: 0.75rem;
 }
 
-.md-typeset [id^="ref-"] {
+.md-typeset [id^="ref-"],
+.md-typeset [id^="eq-"] {
   scroll-margin-top: 5rem;
 }
 
-.md-typeset [id^="ref-"]:target {
+.md-typeset [id^="ref-"]:target,
+.md-typeset p:has(> a[id^="eq-"]:target) + .arithmatex {
   background-color: var(--md-accent-fg-color--transparent);
   outline: 0.2rem solid var(--md-accent-fg-color--transparent);
+}
+
+.md-typeset p:has(> a[id^="eq-"]) {
+  margin: 0;
 }
 
 .md-typeset img {
