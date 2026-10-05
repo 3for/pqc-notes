@@ -1,6 +1,6 @@
 [project]
 site_name = "PQC Notes"
-site_description = "后量子密码学习笔记：格密码学、LWE、ML-KEM 与 ML-DSA。"
+site_description = "深入探索后量子密码：从论文与标准到实际实现，涵盖格密码学与区块链后量子迁移。"
 site_url = "https://3for.github.io/pqc-notes/"
 repo_url = "https://github.com/3for/pqc-notes"
 repo_name = "3for/pqc-notes"
@@ -10,6 +10,10 @@ site_dir = "site"
 nav = [
   { "首页" = "index.md" },
   { "基础格密码学" = "basic-lattice-cryptography-notes-zh.md" },
+  { "PQC 与区块链" = [
+    { "专题导读" = "blockchain/index.md" },
+    { "区块链后量子迁移现状" = "blockchain/pqc-migration.md" },
+  ] },
 ]
 extra_css = ["assets/stylesheets/extra.css"]
 extra_javascript = [

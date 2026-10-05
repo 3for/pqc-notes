@@ -14,6 +14,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 ARTICLE = "basic-lattice-cryptography-notes-zh"
+BLOCKCHAIN = "blockchain/pqc-migration"
 PREFIX = "/pqc-notes/"
 
 
@@ -27,12 +28,12 @@ class Handler(SimpleHTTPRequestHandler):
         pass
 
 
-def check_math(page):
+def check_math(page, minimum=101):
     page.wait_for_function("window.MathJax?.startup?.promise !== undefined")
     page.evaluate("async () => { await MathJax.startup.promise; await document.fonts.ready; }")
     errors = page.locator("mjx-merror, [data-mjx-error]")
     assert errors.count() == 0, errors.all_text_contents()
-    assert page.locator(".arithmatex mjx-container").count() > 100
+    assert page.locator(".arithmatex mjx-container").count() >= minimum
     missing = page.locator(".arithmatex").evaluate_all(
         "nodes => nodes.filter(n => !n.querySelector('mjx-container')).map(n => n.textContent.slice(0, 100))"
     )
@@ -91,7 +92,7 @@ def main():
 
             if args.screenshots:
                 args.screenshots.mkdir(parents=True, exist_ok=True)
-                page.evaluate("window.scrollTo(0, 0)")
+                page.evaluate("window.scrollTo({top: 0, behavior: 'instant'})")
                 page.screenshot(path=str(args.screenshots / "article-desktop.png"))
 
             queries = ["高斯消元", "拒绝采样", "Kyber", "ML-KEM", "数论变换"]
@@ -116,12 +117,49 @@ def main():
             assert urlsplit(page.url).fragment, "Search did not navigate to the matching section."
 
             page.set_viewport_size({"width": 390, "height": 844})
-            page.evaluate("window.scrollTo(0, 0)")
+            page.evaluate("window.scrollTo({top: 0, behavior: 'instant'})")
             check_math(page)
             dimensions = page.evaluate("({viewport:innerWidth, page:document.documentElement.scrollWidth})")
             assert dimensions["page"] <= dimensions["viewport"] + 1, dimensions
             if args.screenshots:
                 page.screenshot(path=str(args.screenshots / "article-mobile.png"))
+
+            # Exercise the new topic through its published reading links.
+            page.set_viewport_size({"width": 1440, "height": 1000})
+            page.goto(base, wait_until="networkidle")
+            page.get_by_role("link", name="阅读 PQC 与区块链专题", exact=True).click()
+            page.wait_for_url(base + "blockchain/")
+            page.get_by_role("link", name="阅读首篇：区块链后量子迁移现状", exact=True).click()
+            page.wait_for_url(base + BLOCKCHAIN + "/")
+            chapter = page.locator(".md-sidebar--primary a[href='#implementations']")
+            assert chapter.is_visible(), "Blockchain chapter navigation is missing."
+            chapter.click()
+            assert urlsplit(page.url).fragment == "implementations"
+            page.locator("article a[href='#ref-quantum-canary']").first.click()
+            assert urlsplit(page.url).fragment == "ref-quantum-canary"
+            if args.screenshots:
+                page.evaluate("window.scrollTo({top: 0, behavior: 'instant'})")
+                page.screenshot(path=str(args.screenshots / "blockchain-desktop.png"))
+
+            blockchain_queries = ["后量子迁移", "零知识证明"]
+            for query in blockchain_queries:
+                print(f"Checking blockchain search: {query}", flush=True)
+                page.goto(base, wait_until="networkidle")
+                page.locator(".md-search__button").click()
+                page.get_by_role("combobox").fill(query)
+                # Search results live in a shadow-root ordered list, outside the
+                # header dialog. Exclude matching sidebar and article links.
+                result = page.locator(f"ol a[href*='{BLOCKCHAIN}']").filter(has_text=query)
+                result.first.wait_for(state="visible", timeout=15000)
+                result.first.click()
+                page.wait_for_url(re.compile(BLOCKCHAIN))
+
+            page.set_viewport_size({"width": 390, "height": 844})
+            page.evaluate("window.scrollTo({top: 0, behavior: 'instant'})")
+            blockchain_dimensions = page.evaluate("({viewport:innerWidth, page:document.documentElement.scrollWidth})")
+            assert blockchain_dimensions["page"] <= blockchain_dimensions["viewport"] + 1, blockchain_dimensions
+            if args.screenshots:
+                page.screenshot(path=str(args.screenshots / "blockchain-mobile.png"))
                 page.set_viewport_size({"width": 1440, "height": 1000})
                 page.goto(base, wait_until="networkidle")
                 page.screenshot(path=str(args.screenshots / "home-desktop.png"))
@@ -129,6 +167,8 @@ def main():
             print(json.dumps({"math_elements": formula_count, "equation_numbers": len(tags),
                               "images": len(images), "search_queries": queries,
                               "footnote_roundtrip": "passed", "mobile_width": dimensions,
+                              "blockchain_search_queries": blockchain_queries,
+                              "blockchain_mobile_width": blockchain_dimensions,
                               "external_requests": 0}, ensure_ascii=False))
             browser.close()
     finally:

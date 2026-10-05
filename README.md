@@ -35,6 +35,15 @@
 
 本专题支持中文搜索，以及章节、公式、参考文献、附录和脚注之间的跳转。阅读时可以沿专题路线学习，也可以从一个具体问题进入，再回到原文核对。
 
+### PQC 与区块链
+
+**PQC 与区块链：威胁模型、协议迁移与实现研究。** 整理区块链中的后量子迁移进展、签名方案与评估方法，后续逐步补充协议迁移案例、实现分析和复现实验。
+
+- [专题导读](https://3for.github.io/pqc-notes/blockchain/)：内容概述、章节阅读入口与维护方式。
+- [区块链后量子迁移现状](https://3for.github.io/pqc-notes/blockchain/pqc-migration/)：首篇文章，整理 17 个区块链项目的对比、签名方案规格与标准状态，以及安全评估时的注意事项。
+
+阅读项目对比时，请结合文章注明的时间范围、评级说明和注意事项。欢迎补充项目更新、纠正参数或提供实现分析；提交时注明对应章节、修改依据、版本和日期，并区分项目方声明、代码检查与实际测试结果。
+
 ## 参与贡献
 
 欢迎完善现有内容，也欢迎围绕其他 PQC 算法、标准和实现提出独立专题。每篇内容围绕一个清楚的问题展开，并提供读者能够继续核对和探索的线索。
@@ -70,14 +79,14 @@ uv run --frozen zensical build --clean
 uv run --frozen python scripts/check_site.py
 ```
 
-静态检查会核对站内链接及锚点，并检查当前长文的公式标记和脚注。涉及公式、页面样式或交互时，再运行浏览器检查：
+静态检查会核对生成页面中的站内链接及锚点，并检查基础格密码学长文的公式标记和脚注。涉及公式、页面样式或交互时，再运行浏览器检查：
 
 ```bash
 uv run --frozen playwright install chromium
 uv run --frozen python scripts/check_browser.py
 ```
 
-已安装 Google Chrome 的 macOS 环境可以省略 Chromium 安装步骤。浏览器检查覆盖当前长文的公式渲染、图片、脚注往返、中文搜索和手机宽度；它目前在本地运行，未接入 CI。检查范围及注意事项见[贡献指南](CONTRIBUTING.md)。
+已安装 Google Chrome 的 macOS 环境可以省略 Chromium 安装步骤。浏览器检查覆盖基础格密码学长文的公式、图片、脚注、搜索和手机宽度，以及区块链专题的阅读入口、章节导航、资料来源跳转、中文搜索和手机宽度；它目前在本地运行，未接入 CI。检查范围及注意事项见[贡献指南](CONTRIBUTING.md)。
 
 ## GitHub Pages 发布
 
@@ -97,6 +106,7 @@ uv run --frozen python scripts/check_browser.py
 | `docs/index.md` | 网站首页与阅读入口 |
 | `docs/basic-lattice-cryptography-notes-zh.md` | 基础格密码学专题及补充推导 |
 | `docs/basic-lattice-cryptography-2024-1287.pdf` | 基础格密码学专题对应的英文原文 |
+| `docs/blockchain/` | PQC 与区块链专题导读及迁移现状整理 |
 | `docs/output/` | 正文引用的图片 |
 | `docs/assets/`、`overrides/` | 网站样式、水印、本地数学资源与模板 |
 | `zensical.toml` | 站点信息、导航、署名与 GitHub 链接 |
