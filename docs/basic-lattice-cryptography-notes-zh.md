@@ -1496,7 +1496,7 @@ $$
 <a id="eq-78"></a>
 
 $$
-\forall \mathbf {z} _ {1} ^ {\prime} \in [ \bar{\beta} ] ^ {m}, \mathbf {z} _ {2} ^ {\prime} \in [ \bar{\beta} ] ^ {n}, \Pr_ {\mathbf {y} _ {1}, \mathbf {y} _ {2}} \left[ \left(\mathbf {z} _ {1}, \mathbf {z} _ {2}\right) = \left(\mathbf {z} _ {1} ^ {\prime}, \mathbf {z} _ {2} ^ {\prime}\right) \mid \left(\mathbf {z} _ {1}, \mathbf {z} _ {2}\right) \neq \bot \right] = \left(\frac {1}{2 (\bar {\beta}+\gamma) + 1}\right) ^ {d (m + n)}\tag{78}
+\forall \mathbf {z} _ {1} ^ {\prime} \in [ \bar{\beta} ] ^ {m}, \mathbf {z} _ {2} ^ {\prime} \in [ \bar{\beta} ] ^ {n}, \Pr_ {\mathbf {y} _ {1}, \mathbf {y} _ {2}} \left[ \left(\mathbf {z} _ {1}, \mathbf {z} _ {2}\right) = \left(\mathbf {z} _ {1} ^ {\prime}, \mathbf {z} _ {2} ^ {\prime}\right) \mid \left(\mathbf {z} _ {1}, \mathbf {z} _ {2}\right) \neq \bot \right] = \left(\frac {1}{2 \bar {\beta} + 1}\right) ^ {d (m + n)}\tag{78}
 $$
 
 证明。将 $\begin{bmatrix} \mathbf{z}_{1} \\ \mathbf{z}_{2} \end{bmatrix} = \begin{bmatrix} c \mathbf{s}_{1} \\ c \mathbf{s}_{2} \end{bmatrix} + \begin{bmatrix} \mathbf{y}_{1} \\ \mathbf{y}_{2} \end{bmatrix}$ 看作整数向量之和，用第 4.1.1 节中的记号可以写为
