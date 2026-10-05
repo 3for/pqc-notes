@@ -33,6 +33,15 @@
   font-size: 0.75rem;
 }
 
+.md-typeset [id^="ref-"] {
+  scroll-margin-top: 5rem;
+}
+
+.md-typeset [id^="ref-"]:target {
+  background-color: var(--md-accent-fg-color--transparent);
+  outline: 0.2rem solid var(--md-accent-fg-color--transparent);
+}
+
 .md-typeset img {
   display: block;
   margin: 1.5rem auto;
