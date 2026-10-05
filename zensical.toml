@@ -4,6 +4,7 @@ site_description = "后量子密码学习笔记：格密码学、LWE、ML-KEM �
 site_url = "https://3for.github.io/pqc-notes/"
 repo_url = "https://github.com/3for/pqc-notes"
 repo_name = "3for/pqc-notes"
+copyright = '中文整理：<a href="https://github.com/3for">3for</a> · PQC Notes'
 docs_dir = "docs"
 site_dir = "site"
 nav = [
@@ -38,6 +39,11 @@ scheme = "slate"
 primary = "teal"
 accent = "teal"
 toggle = { icon = "material/brightness-4", name = "切换到浅色模式" }
+
+[[project.extra.social]]
+icon = "fontawesome/brands/github"
+link = "https://github.com/3for/pqc-notes"
+name = "GitHub：3for/pqc-notes"
 
 [project.markdown_extensions.toc]
 permalink = true

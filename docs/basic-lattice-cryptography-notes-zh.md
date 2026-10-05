@@ -5,7 +5,7 @@ Vadim Lyubashevsky（Vadim Lyubashevsky 是 ML-KEM 和 ML-DSA 前身方案的核
 IBM 欧洲研究院，苏黎世
 vad@zurich.ibm.com
 
-（最后更新：2025 年 6 月 18 日）
+（本文源自Vadim Lyubashevsky论文 [Basic Lattice Cryptography: The concepts behind Kyber (ML-KEM) and Dilithium (ML-DSA)](https://eprint.iacr.org/2024/1287.pdf)，该论文最后更新：2025 年 6 月 18 日）
 
 ## 1 序言
 
@@ -34,8 +34,6 @@ vad@zurich.ibm.com
 尽管人们对基于格的加密和签名感兴趣，主要是因为它们被认为能够抵抗量子攻击，但本文不会探讨这一主题。在随机预言机模型（ROM，random oracle model）的安全性证明中，具体的密码哈希函数被替换为一个完美随机函数，攻击者只能通过预言机访问该函数。量子环境中也存在对应的模型（QROM），其中允许攻击者额外对该函数进行量子查询，即以输入的叠加态查询预言机。虽然 ROM 中的安全性证明不能直接移植到QROM 环境中，但近期已有许多工作拉近了二者之间的距离（如 \[[HHK17](#ref-hhk17), [SXY18](#ref-sxy18), [KLS18](#ref-kls18), [DFMS19](#ref-dfms19), [LZ19](#ref-lz19), [JMW24](#ref-jmw24)\]），剩下的差别仅在于安全归约的紧致性或其中使用的具体参数。截至撰写本文时，只要将所有密码函数替换为具有所需量子安全性的对应函数，那么对于已在 ROM 中证明安全的实际方案，即使赋予攻击者以输入叠加态查询随机预言机的额外量子能力，也没有已知的更有效攻击。
 
 内容安排。本文并不沿着最短路径介绍 Kyber 和 Dilithium，而是会适当绕行，以触及格密码学中广泛使用的相关主题。第 2 节介绍环 $\mathbb{Z}_{q}$ 上基于 LWE 问题困难性的格加密框架。该框架源自 Regev 的原始工作 \[[Reg09](#ref-reg09)\]，并结合了 \[[PVW08](#ref-pvw08), [ACPS09](#ref-acps09), [LPS10](#ref-lps10), [LPR10](#ref-lpr10), [LP11](#ref-lp11)\] 中的一些变体和优化。本文还将讨论许多细小却关键的密文压缩技巧。其中一些技巧相当通用，在后续章节介绍的构造中也会派上用场。第 3 节将格作为几何对象引入，并说明 LWE 和 SIS 问题与求解格问题的困难性之间的联系。第 4 节回顾多项式环，并将第 2 节加密方案的对应版本具体化，从而得到 Kyber（ML-KEM）加密方案。该节还介绍数论变换算法，用于加速某些特定多项式环上的运算。最后，第 5 节介绍构造经过优化的、基于格的 Schnorr 签名对应方案所需的全部技术，Dilithium（ML-DSA）\[[DKL+18](#ref-dkl-plus-18)\] 就是其中一个实例。该方案通过对基于格的 $\Sigma$ 协议应用 Fiat-Shamir 变换得到。后者也为理解零知识证明等更高级的格构造提供了入口。
-
-致谢。感谢 Katharina Boudgoust、Jonathan Katz、Katrine Laursen、Antonio Merino-Gallardo、Haotian Lin、Daniele Micciancio、Laz Panard 和 Christopher Patton 找出了本文此前版本中的笔误与错误。文中可能仍然漏进了一些错误，随着它们被发现，本文会尽量定期更新。如果发现任何此类错误或笔误，可给vad@zurich.ibm.com发邮件说明！本工作获得欧盟 H2020 ERC 项目 101002845 PLAZA 的支持。
 
 ## 2 加密
 

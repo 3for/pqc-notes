@@ -11,6 +11,32 @@
   line-height: 1.85;
 }
 
+/* Keep the decorative watermark inside the article, clear of navigation. */
+.md-content__inner {
+  --pqc-watermark-opacity: 0.08;
+  position: relative;
+  isolation: isolate;
+}
+
+[data-md-color-scheme="slate"] .md-content__inner {
+  --pqc-watermark-opacity: 0.1;
+}
+
+@supports (mask-image: url("")) or (-webkit-mask-image: url("")) {
+  .md-content__inner::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+    background-color: var(--md-default-fg-color);
+    opacity: var(--pqc-watermark-opacity);
+    -webkit-mask: url("../images/watermark.svg") 0 0 / 520px 360px repeat;
+    mask: url("../images/watermark.svg") 0 0 / 520px 360px repeat;
+  }
+}
+
 .md-typeset h1,
 .md-typeset h2,
 .md-typeset h3,
@@ -68,6 +94,11 @@
 }
 
 @media (max-width: 44.98em) {
+  .md-content__inner::after {
+    -webkit-mask-size: 360px 249px;
+    mask-size: 360px 249px;
+  }
+
   .md-typeset {
     font-size: 0.8rem;
   }

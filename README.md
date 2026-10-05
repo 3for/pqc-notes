@@ -22,8 +22,12 @@ uv run zensical serve
 - `docs/basic-lattice-cryptography-2024-1287.pdf`：原文 PDF。
 - `docs/output/`：正文图片，保留 Markdown 中的相对引用路径。
 - `zensical.toml`：站点、导航和 Markdown 配置。
+- `docs/assets/images/watermark.svg`：正文水印的署名和站点地址。
+- `docs/assets/stylesheets/extra.css`：水印透明度、手机尺寸及其他页面样式。
 
 新增笔记时放入 `docs/`，并更新 `zensical.toml` 的导航。直接维护这一份正文即可。构建结果保存在 `site/`，无需提交。
+
+页脚的“中文整理：3for”及 GitHub 链接在 `zensical.toml` 的 `copyright` 和 `project.extra.social` 中修改。水印仅显示在正文区域，不影响文字选择或链接点击；其文案不会加入正文、搜索索引或复制的文字。
 
 ## 检查样页
 
