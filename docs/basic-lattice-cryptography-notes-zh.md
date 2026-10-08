@@ -109,7 +109,7 @@ $$
 
 现在，对上一节中的假设做一个“小小的”调整，使其可能成立，同时仍能按同样的思路构造密码系统。下面定义带误差学习问题（LWE，Learning with Errors Problem）\[[Reg09](#ref-reg09)\] 的一个简单版本，大量格密码学构造都建立在它的基础之上。
 
-定义 1。对于正整数 $m$、$n$、$q$ 以及 $\beta < q$，$LWE_{n,m,q,\beta}$ 问题要求区分以下两个分布：
+<span id="definition-1" class="reference-anchor">定义 1</span>。对于正整数 $m$、$n$、$q$ 以及 $\beta < q$，$LWE_{n,m,q,\beta}$ 问题要求区分以下两个分布：
 
 1. $(\mathbf{A},\mathbf{A}\mathbf{s} + \mathbf{e})$，其中 $\mathbf{A}\leftarrow \mathbb{Z}_q^{n\times m}$、$\mathbf{s}\leftarrow [\beta ]^m$、$\mathbf{e}\leftarrow [\beta ]^n$
 
@@ -121,13 +121,13 @@ $$
 
 为了涵盖可能使用的不同分布，可以相对于秘密量的分布 $\psi$ 定义 LWE 问题如下：
 
-定义 2。对于正整数 $m$、$n$、$q$ 和分布 $\psi$，$LWE_{n,m,q,\psi}$ 问题要求区分以下两个分布：
+<span id="definition-2" class="reference-anchor">定义 2</span>。对于正整数 $m$、$n$、$q$ 和分布 $\psi$，$LWE_{n,m,q,\psi}$ 问题要求区分以下两个分布：
 
 1. $(\mathbf{A},\mathbf{A}\mathbf{s} + \mathbf{e})$，其中 $\mathbf{A}\gets \mathbb{Z}_q^{n\times m},\mathbf{s}\gets \psi^m,\mathbf{e}\gets \psi^n$
 
 2. $(\mathbf{A},\mathbf{u})$，其中 $\mathbf{A} \leftarrow \mathbb{Z}_q^{n \times m}$ 且 $\mathbf{u} \leftarrow \mathbb{Z}_q^n$。
 
-为使讨论具体，主要使用定义 1 中的 LWE，但只要考虑 $\psi$ 的具体性质（特别是该分布生成的秘密量的范数期望），本文的全部论述也同样适用于定义 2 中的问题。
+为使讨论具体，主要使用[定义 1](#definition-1) 中的 LWE，但只要考虑 $\psi$ 的具体性质（特别是该分布生成的秘密量的范数期望），本文的全部论述也同样适用于[定义 2](#definition-2) 中的问题。
 
 需要注意的是，在 LWE 的定义中，没有对 $m, n$ 与 $q$ 的相对大小施加任何条件。因此，某些参数选择可能使 LWE 实例以一种平凡的方式成为困难问题。如，如果 $n < m$ 且 $\beta$ 足够大，那么分布 $(\mathbf{A}, \mathbf{As} + \mathbf{e})$ 确实可能与 $(\mathbf{A}, \mathbf{u})$ 统计接近。显然，仅凭这样的假设不应能够构造加密方案，否则就会得到无条件安全的公钥加密方案。等到考虑解密正确性时，就会明白这种做法为什么行不通。当然，也可以将参数设置为使 LWE 不再困难。如，当 $m = 1$ 时，判断 $\mathbf{As} + \mathbf{e}$ 是否接近向量 $\mathbf{A}$ 的某个倍数并不困难。本文将在[第 3 节](#3-lwe)讨论 LWE 问题的困难性。另外，也可以定义秘密量 $\mathbf{s}$ 在 $\mathbb{Z}_q^m$ 中均匀选取的 LWE（此时须注意将 $n$ 取得足够大，以免 LWE 问题以平凡的方式成为困难问题）；这实际上就是 \[[Reg09](#ref-reg09)\] 中 LWE 的原始定义。\[[ACPS09](#ref-acps09)\] 表明，将 $\mathbf{s}$ 与 $\mathbf{e}$ 取自同一分布，得到的问题在本质上同样困难。在应用中，取较小的 $\mathbf{s}$ 通常效率更高，因此本文只考虑 LWE 问题的这一版本。
 
@@ -311,11 +311,13 @@ $$
 
 #### 2.5.1 通过去除低位部分缩减密文大小
 
+<a id="figure-1" class="reference-anchor"></a>
+
 ![](output/2024-1287/hybrid_auto/images/ad4843215f4d9788aac9408eaeb6bf146dc622c39cd2f09d0448fb0a7863d4d2.jpg)
 
 图 1：将 $\mathbb{Z}_{13}$ 表示为圆周上的点。如果定义集合 $S = \{\lceil i \cdot 13/4 \rfloor : 0 \leq i < 4\}$，那么它由 $0$、$3$、$7$、$10$ 这四个点组成。因此，$\mathcal{S}$ 可以用 $2$ 比特表示，且 $\mathbb{Z}_{13}$ 中的每个点到 $\mathcal{S}$ 中某个元素的距离都不超过 $\lceil 13/8 \rceil = 2$。
 
-密文部分 $\mathbf{V}$ 对密文总大小的贡献为 $N\log q$ 比特。假设加密者不想将 $\mathbf{V}$ 每个系数的全部 $\log q$ 比特作为密文的一部分公布，而希望每个系数只传输 $\kappa$ 比特。这是可行的，但会给解密等式增加一个额外误差。将加法群 $\mathbb{Z}_q$ 想象为圆周上的点（参见图 1），希望选取一个大小为 $2^{\kappa}$ 的集合 $\mathcal{S}\subset \mathbb{Z}_q$，使 $\mathcal{S}$ 中相邻点之间的最大距离尽可能小，其中距离按两点之间的 $\mathbb{Z}_q$ 点数度量。注意，$q / 2^{\kappa}$ 是所能期望的最小值，因此希望尽量接近这个数。可以将这样的集合定义为
+密文部分 $\mathbf{V}$ 对密文总大小的贡献为 $N\log q$ 比特。假设加密者不想将 $\mathbf{V}$ 每个系数的全部 $\log q$ 比特作为密文的一部分公布，而希望每个系数只传输 $\kappa$ 比特。这是可行的，但会给解密等式增加一个额外误差。将加法群 $\mathbb{Z}_q$ 想象为圆周上的点（参见[图 1](#figure-1)），希望选取一个大小为 $2^{\kappa}$ 的集合 $\mathcal{S}\subset \mathbb{Z}_q$，使 $\mathcal{S}$ 中相邻点之间的最大距离尽可能小，其中距离按两点之间的 $\mathbb{Z}_q$ 点数度量。注意，$q / 2^{\kappa}$ 是所能期望的最小值，因此希望尽量接近这个数。可以将这样的集合定义为
 
 <a id="eq-18"></a>
 
@@ -343,7 +345,7 @@ $$
 
 下面将上一节关于压缩的讨论具体化。首先定义一种将元素从一个集合映射到另一个集合的运算。当目标集合更小时，这种运算可以看作舍入或压缩。当目标集合更大时，则可以看作提升或解压缩。
 
-定义 3。对于元素 $x \in \mathbb{Z}_{q}$ 和某个正整数 p，定义从 $\mathbb{Z}_{q}$ 到 $\mathbb{Z}_{p}$ 的映射为
+<span id="definition-3" class="reference-anchor">定义 3</span>。对于元素 $x \in \mathbb{Z}_{q}$ 和某个正整数 p，定义从 $\mathbb{Z}_{q}$ 到 $\mathbb{Z}_{p}$ 的映射为
 
 $$
 \left\lceil x \right\rfloor_{q \rightarrow p}
@@ -354,7 +356,7 @@ $$
 
 可以看到，所得的 $\mathbb{Z}_{p}$ 中的元素，与 $\mathbb{Z}_{q}$ 中具体选择哪个代表元 $x$ 无关。也就是说，集合 $x + q\mathbb{Z}$ 中的所有元素都会在 $\mathbb{Z}_{p}$ 中产生相同的结果（因为 $\left\lceil \frac{(x+q\mathbb{Z})p}{q} \right\rfloor = \left\lceil \frac{xp}{q} + p\mathbb{Z} \right\rfloor = \left\lceil \frac{xp}{q} \right\rfloor + p\mathbb{Z}$），所以上述定义是良定义的。下面证明一个核心引理，说明如何利用上述函数有效地压缩和解压缩数据。具体而言，该引理表明：如果先将 $\mathbb{Z}_{q}$ 中的元素压缩为 $\mathbb{Z}_{p}$ 中的元素（其中 $p < q$），再解压缩回 $\mathbb{Z}_{q}$，那么结果与原元素的距离不会太远。
 
-引理 1。对于整数 $p < q$ 和 $x \in \mathbb{Z}_q$，有
+<span id="lemma-1" class="reference-anchor">引理 1</span>。对于整数 $p < q$ 和 $x \in \mathbb{Z}_q$，有
 
 $$
 \left\lceil
@@ -398,7 +400,7 @@ $$
 
 其中，舍入误差满足 $|\delta'| \leq \frac{1}{2}$，并且 $\frac{\delta q}{p} \leq \frac{q}{2p}$。
 
-为了将定义 3 中的模数切换运算与[第 2.5.1 节](#251)的例子联系起来，现将上一节中 $S, \kappa, HIGH_\mathcal{S}, LOW_\mathcal{S}$ 的定义与这里引入的概念对应如下。
+为了将[定义 3](#definition-3) 中的模数切换运算与[第 2.5.1 节](#251)的例子联系起来，现将上一节中 $S, \kappa, HIGH_\mathcal{S}, LOW_\mathcal{S}$ 的定义与这里引入的概念对应如下。
 
 1. $2^{\kappa} = p$
 
@@ -408,7 +410,7 @@ $$
 
 4. $\mathrm{LOW}_{\mathcal{S}}(x) = x - \mathrm{HIGH}_{\mathcal{S}}(x)$
 
-引理 1 证明了 $\operatorname{LOW}_{\mathcal{S}}(x) \in [\lceil q/2p\rceil]$。在压缩的实现中，当然不会发送元素 $\operatorname{HIGH}_{\mathcal{S}}(x) \in \mathbb{Z}_{q}$，而会发送 $\lceil x \rfloor_{q \to p} \in \mathbb{Z}_{p}$，因为后者的表示更紧凑。可以将 $\operatorname{HIGH}_{\mathcal{S}}(x) \in \mathbb{Z}_{q}$ 理解为先压缩 $x$ 再解压缩得到的结果。
+[引理 1](#lemma-1) 证明了 $\operatorname{LOW}_{\mathcal{S}}(x) \in [\lceil q/2p\rceil]$。在压缩的实现中，当然不会发送元素 $\operatorname{HIGH}_{\mathcal{S}}(x) \in \mathbb{Z}_{q}$，而会发送 $\lceil x \rfloor_{q \to p} \in \mathbb{Z}_{p}$，因为后者的表示更紧凑。可以将 $\operatorname{HIGH}_{\mathcal{S}}(x) \in \mathbb{Z}_{q}$ 理解为先压缩 $x$ 再解压缩得到的结果。
 
 还要指出的是，从式[（9）](#eq-9)那样带噪声的解密输出中恢复消息 $\mu$，也可以通过压缩函数完成。具体而言，对于元素 $x \in \mathbb{Z}_{q}, \lceil x \rfloor_{q \to 2}$，如果 $x$ 更接近 $0$ 而不是 $q/2$，该映射将得到 $0$，否则得到 $1$。因此，可以将解密过程（如式[（8）](#eq-8)）改写为
 
@@ -505,7 +507,7 @@ $$
 \| (\mathbf {s}, \mathbf {e} _ {1}) \| = \| (\mathbf {r}, \mathbf {e} _ {2}) \| \approx \sigma \cdot \sqrt {2 n}, \text {且式} (2 2) \sim \mathcal {N} _ {\frac {4 \sqrt {2}}{9}. \sigma^ {2}. \sqrt {2 n}}.\tag{24}
 $$
 
-因此，$(\mathbf{s},\mathbf{e}_1)$ 和 $(\mathbf{r},\mathbf{e}_2)$ 的 $\ell_2$ 范数在两种情况下相同，但第二种情况下式[（22）](#eq-22)的分布标准差更小，也就是说，当 $\sigma_1\neq \sigma_2$ 时，式[（22）](#eq-22)中的误差更小。是否确实应尝试设定 $\sigma_1\neq \sigma_2$，取决于是否认为这两个 LWE 问题具有相同的困难性：一个是定义 2 中的问题，另一个则是 $\mathbf{s},\mathbf{e}$ 具有不同分布的问题。
+因此，$(\mathbf{s},\mathbf{e}_1)$ 和 $(\mathbf{r},\mathbf{e}_2)$ 的 $\ell_2$ 范数在两种情况下相同，但第二种情况下式[（22）](#eq-22)的分布标准差更小，也就是说，当 $\sigma_1\neq \sigma_2$ 时，式[（22）](#eq-22)中的误差更小。是否确实应尝试设定 $\sigma_1\neq \sigma_2$，取决于是否认为这两个 LWE 问题具有相同的困难性：一个是[定义 2](#definition-2) 中的问题，另一个则是 $\mathbf{s},\mathbf{e}$ 具有不同分布的问题。
 
 ### 2.6 非交互式密钥交换（NIKE，Non-Interactive Key Exchange）
 
@@ -619,9 +621,9 @@ $$
 
 为清楚起见，使用 $\Delta^{C}$ 而非 $\Delta$，以表示 $\mathbf{t}$ 是该陪集在 $\mathbf{A}$ 下的像，而不是某个陪集代表元。
 
-下面证明一些关于随机格中短向量存在与否的结论。为简单起见，只证明 $q$ 为素数的情形，但通过更仔细的分析，可以对所有 $q$ 证明类似结论。引理 2 和引理 3 表明，随机陪集距离随机 $q$ 元格很远，而且 $q$ 元格中没有非常短的向量。引理 4 证明了一个部分逆命题，给出了任意 $q$ 元格中最短向量长度的上界。
+下面证明一些关于随机格中短向量存在与否的结论。为简单起见，只证明 $q$ 为素数的情形，但通过更仔细的分析，可以对所有 $q$ 证明类似结论。[引理 2](#lemma-2) 和[引理 3](#lemma-3) 表明，随机陪集距离随机 $q$ 元格很远，而且 $q$ 元格中没有非常短的向量。[引理 4](#lemma-4) 证明了一个部分逆命题，给出了任意 $q$ 元格中最短向量长度的上界。
 
-引理 2. 对于任意素数 $q$ 和任意 $\mathbf{t} \in \mathbb{Z}_q^n \setminus \{\mathbf{0}\}$，
+<span id="lemma-2" class="reference-anchor">引理 2</span>. 对于任意素数 $q$ 和任意 $\mathbf{t} \in \mathbb{Z}_q^n \setminus \{\mathbf{0}\}$，
 
 $$
 \Pr_ {\mathbf {A} \leftarrow \mathbb {Z} _ {q} ^ {n \times m}} [ \exists \mathbf {z} \in [ \beta ] ^ {n + m} s. t. [ \mathbf {A} \mid \mathbf {I} _ {n} ] \mathbf {z} \equiv \mathbf {t} \pmod {q} ] \leq (2 \beta + 1) ^ {n + m} / q ^ {n}
@@ -635,7 +637,7 @@ $$
 
 其中 $z^{-1} \pmod q$ 存在，因为假设了 $\gcd(z_{1}, q) = 1$。由于 $[\beta]^{n+m}$ 中共有 $(2\beta + 1)^{n+m}$ 个可能的向量，由并集界即可得到引理中的结论。
 
-推论 1.
+<span id="corollary-1" class="reference-anchor">推论 1</span>.
 
 $$
 \Pr_ {\mathbf {A} \leftarrow \mathbb {Z} _ {q} ^ {n \times m}, \mathbf {t} \leftarrow \mathbb {Z} _ {q} ^ {n}} \left[ \Delta_ {\infty} ^ {C} (\mathbf {t}, \Lambda) \leq \beta \right] \leq (1 - | \mathbb {Z} _ {q} ^ {*} | / q) ^ {n} + (2 \beta + 1) ^ {n + m} / q ^ {n},
@@ -645,9 +647,9 @@ $$
 
 格密码学中 $q$ 的一些“常用”取值包括素数以及 $2$ 的幂。在这两种情况下，概率界中的第一项都是关于 $n$ 可忽略的（分别为 $(1/q)^{n}$ 和 $2^{-n}$）。因此，只要 $\beta^{1+m/n} \ll q$，随机陪集到 $\Lambda$ 的距离就会大于 $\beta$。
 
-下一个引理表明，在随机选取 $\mathbf{A} \leftarrow \mathbb{Z}_q^{n \times m}$ 时，格 $\mathcal{L}_q^\perp([\mathbf{A} \mid \mathbf{I}_n])$ 中存在短非零向量的概率很小。在此只对素数 $q$ 证明该引理，因为其他取值的情况略为繁琐。该引理的证明与引理 2 的证明基本相同。
+下一个引理表明，在随机选取 $\mathbf{A} \leftarrow \mathbb{Z}_q^{n \times m}$ 时，格 $\mathcal{L}_q^\perp([\mathbf{A} \mid \mathbf{I}_n])$ 中存在短非零向量的概率很小。在此只对素数 $q$ 证明该引理，因为其他取值的情况略为繁琐。该引理的证明与[引理 2](#lemma-2) 的证明基本相同。
 
-引理 3. 对于任意素数 $q$，
+<span id="lemma-3" class="reference-anchor">引理 3</span>. 对于任意素数 $q$，
 
 $$
 \Pr_{\substack{\mathbf{A}\leftarrow \mathbb{Z}_{q}^{n\times m}}}\left[\exists \mathbf{z}\in [\beta ]^{n + m}\setminus \{\mathbf{0}\} \right. s.t. \left[\mathbf{A}\mid \mathbf{I}_{n}\right]\mathbf{z}\equiv \mathbf{0}\pmod {q}\left. \right]\leq (2\beta +1)^{n + m} / q^{n}.
@@ -655,7 +657,7 @@ $$
 
 下一个引理是上一个引理的逆命题；它给出了某个存在的非零向量的长度上界。
 
-引理 4. 对于任意 $q$ 和任意 $\mathbf{A} \in \mathbb{Z}_{q}^{n \times m}$，
+<span id="lemma-4" class="reference-anchor">引理 4</span>. 对于任意 $q$ 和任意 $\mathbf{A} \in \mathbb{Z}_{q}^{n \times m}$，
 
 $$
 \exists \mathbf {z} \in \left[ q ^ {n / (n + m)} \right] ^ {n + m} \setminus \{\mathbf {0} \} \text {s.t.} [ \mathbf {A} \mid \mathbf {I} _ {n} ] \mathbf {z} \equiv \mathbf {0} \pmod {q}
@@ -663,13 +665,13 @@ $$
 
 证明。证明使用抽屉原理。$\mathbb{Z}^{n+m}$ 中系数介于 $0$ 与 $q^{n/(n+m)}$ 之间的向量有超过 $(q^{n/(n+m)})^{n+m}=q^{n}$ 个。由于 $\mathbf{A}\mathbf{z} \mod q$ 的取值只有 $q^{n}$ 种可能，因此必然存在两个不同的 $\mathbf{z}_{1}, \mathbf{z}_{2}$，其系数均在上述范围内，且满足 $\mathbf{A}\mathbf{z}_1 \equiv \mathbf{A}\mathbf{z}_2 \pmod{q}$。因此 $\mathbf{z}_1-\mathbf{z}_2 \in \left[q^{n/(n+m)}\right]^{n+m}$，并且 $\mathbf{A}(\mathbf{z}_{1}-\mathbf{z}_{2}) \equiv \mathbf{0} \pmod{q}$。
 
-考察引理 3 和引理 4 的陈述，可以看到：在 $\Lambda = \mathcal{L}_{q}^{\perp}([\mathbf{A} \mid \mathbf{I}_{n}])$ 中存在系数属于 $[\beta]$ 的向量，与以高概率不存在这种向量之间的分界相当明显。引理 4 表明，当 $\beta = q^{n/(n+m)}$ 时，这样的向量总是存在。另一方面，如果设 $\beta < \frac{1}{4} q^{n/(n+m)}$，那么 $\Lambda$ 中存在系数属于 $[\beta]$ 的向量的概率小于 $2^{-(n+m)}$。
+考察[引理 3](#lemma-3) 和[引理 4](#lemma-4) 的陈述，可以看到：在 $\Lambda = \mathcal{L}_{q}^{\perp}([\mathbf{A} \mid \mathbf{I}_{n}])$ 中存在系数属于 $[\beta]$ 的向量，与以高概率不存在这种向量之间的分界相当明显。[引理 4](#lemma-4) 表明，当 $\beta = q^{n/(n+m)}$ 时，这样的向量总是存在。另一方面，如果设 $\beta < \frac{1}{4} q^{n/(n+m)}$，那么 $\Lambda$ 中存在系数属于 $[\beta]$ 的向量的概率小于 $2^{-(n+m)}$。
 
 ### 3.2 在随机格中寻找短向量（SIS 问题）
 
-关于格，一个基本的计算问题是在其中寻找一个“短”的（非零）向量。具体到上面所讨论的格，这个问题就变成寻找一个非零的 $\mathbf{z} \in [\beta]^{n+m}$，使得 $[\mathbf{A} \mid \mathbf{I}_{n}]\mathbf{z} \equiv \mathbf{0} \pmod{q}$。引理 4 表明，当 $\beta = q^{n/(n+m)}$ 时，这样的向量一定存在，但其证明并未给出寻找它的方法。截至目前，对于均匀随机的 $\mathbf{A}$，所有已知的寻找这类向量的（量子）算法都需要 $2^{\Omega(m+n)}$ 时间（参见 \[[AKS01](#ref-aks01), [ADRS15](#ref-adrs15), [AS18](#ref-as18)\]）。
+关于格，一个基本的计算问题是在其中寻找一个“短”的（非零）向量。具体到上面所讨论的格，这个问题就变成寻找一个非零的 $\mathbf{z} \in [\beta]^{n+m}$，使得 $[\mathbf{A} \mid \mathbf{I}_{n}]\mathbf{z} \equiv \mathbf{0} \pmod{q}$。[引理 4](#lemma-4) 表明，当 $\beta = q^{n/(n+m)}$ 时，这样的向量一定存在，但其证明并未给出寻找它的方法。截至目前，对于均匀随机的 $\mathbf{A}$，所有已知的寻找这类向量的（量子）算法都需要 $2^{\Omega(m+n)}$ 时间（参见 \[[AKS01](#ref-aks01), [ADRS15](#ref-adrs15), [AS18](#ref-as18)\]）。
 
-随着 $\beta$ 增大，该问题确实会变得更容易。显然，如果 $\beta = q / 2$，只需将 $\mathbf{z}$ 中与 $\mathbf{I}_n$ 相乘的那些系数设为目标系数，就能轻易解决该问题。当 $\beta$ 较小时，可以运行一种算法，在格中寻找比最短向量长某个倍数的向量。目前所有用于寻找这类短向量的高效（即多项式时间）算法，都衍生自著名的 LLL 算法 \[[LLL82](#ref-lll82)\]；LLL 算法保证找到的向量长度至多是格中最短向量长度的 $2^{O(n + m)}$ 倍。由引理 4 可知，对于随机的 $\mathbf{A}$，LLL 算法会在 $\mathcal{L}_q^\perp([\mathbf{A} \mid \mathbf{I}_n])$ 中找到一个向量 $\mathbf{z} \in \left[2^{O(n + m)} \cdot q^{n / (n + m)}\right]^{n + m}$。
+随着 $\beta$ 增大，该问题确实会变得更容易。显然，如果 $\beta = q / 2$，只需将 $\mathbf{z}$ 中与 $\mathbf{I}_n$ 相乘的那些系数设为目标系数，就能轻易解决该问题。当 $\beta$ 较小时，可以运行一种算法，在格中寻找比最短向量长某个倍数的向量。目前所有用于寻找这类短向量的高效（即多项式时间）算法，都衍生自著名的 LLL 算法 \[[LLL82](#ref-lll82)\]；LLL 算法保证找到的向量长度至多是格中最短向量长度的 $2^{O(n + m)}$ 倍。由[引理 4](#lemma-4) 可知，对于随机的 $\mathbf{A}$，LLL 算法会在 $\mathcal{L}_q^\perp([\mathbf{A} \mid \mathbf{I}_n])$ 中找到一个向量 $\mathbf{z} \in \left[2^{O(n + m)} \cdot q^{n / (n + m)}\right]^{n + m}$。
 
 虽然 LLL 算法保证找到的向量长度，相比最短向量的长度要大一个关于格维数的指数倍，但在实践中，这个指数并不太大。在对维数足够高（至少为 100）的格进行实验之前，人们甚至还不清楚 LLL 在随机格上的实际近似因子是指数级的，还是仅仅线性的。最终发现，这个近似因子确实随维数呈指数增长，但指数的底数相当小。
 
@@ -703,13 +705,15 @@ $$
 
 在形如 [(30)](#eq-30) 的随机格中寻找短向量的问题称为 SIS（小整数解，Short Integer Solution）问题。已知求解该问题的随机实例，至少与求解所有格上的某个相关问题一样困难 \[[Ajt96](#ref-ajt96), [MR07](#ref-mr07)\]。用 $\mathsf{SIS}_{n,m,q,\beta}$ 表示如下问题：给定一个形如 [(30)](#eq-30) 的随机格，寻找一个系数属于 $[\beta]$ 的向量。
 
-定义 4. 对于正整数 $m$、$n$、$q$ 以及 $\beta < q$，$\mathsf{SIS}_{n,m,q,\beta}$ 问题要求：对于随机选取的矩阵 $\mathbf{A} \leftarrow \mathbb{Z}_{q}^{n \times m}$，寻找向量 $\mathbf{s}_{1} \in [\beta]^{m}$ 和 $\mathbf{s}_{2} \in [\beta]^{n}$，使得 $\mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2} = \mathbf{0} \pmod{q}$。【注意同时要求 $(\mathbf{s}_{1},\mathbf{s}_{2}\neq (\mathbf{0}, \mathbf{0})$，否则SIS有平凡零解。】
+<span id="definition-4" class="reference-anchor">定义 4</span>. 对于正整数 $m$、$n$、$q$ 以及 $\beta < q$，$\mathsf{SIS}_{n,m,q,\beta}$ 问题要求：对于随机选取的矩阵 $\mathbf{A} \leftarrow \mathbb{Z}_{q}^{n \times m}$，寻找向量 $\mathbf{s}_{1} \in [\beta]^{m}$ 和 $\mathbf{s}_{2} \in [\beta]^{n}$，使得 $\mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2} = \mathbf{0} \pmod{q}$。【注意同时要求 $(\mathbf{s}_{1},\mathbf{s}_{2}\neq (\mathbf{0}, \mathbf{0})$，否则SIS有平凡零解。】
 
-注意，由引理 3 可知，当 $\beta \ll \frac{1}{2}q^{n/(n+m)}$ 时，$\mathsf{SIS}_{n,m,q,\beta}$ 问题由于没有解而平凡地成为困难问题；而 [(36)](#eq-36) 表明，该问题随着 $\beta$ 增大而变得更容易。还可以从 [(36)](#eq-36) 看出，一旦 $m$ 大于 $\sqrt{n \log q / \log \delta}$，它就不再影响问题的困难性，因为它不出现在所找到向量大小的公式中。这与 $\mathsf{LWE}_{n,m,q,\beta}$ 问题的情况十分相似，后者的参数 $n$ 也没有太大影响。与那种情况一样，将其简记为 $\mathsf{SIS}_{n,q,\beta}$。
+注意，由[引理 3](#lemma-3) 可知，当 $\beta \ll \frac{1}{2}q^{n/(n+m)}$ 时，$\mathsf{SIS}_{n,m,q,\beta}$ 问题由于没有解而平凡地成为困难问题；而 [(36)](#eq-36) 表明，该问题随着 $\beta$ 增大而变得更容易。还可以从 [(36)](#eq-36) 看出，一旦 $m$ 大于 $\sqrt{n \log q / \log \delta}$，它就不再影响问题的困难性，因为它不出现在所找到向量大小的公式中。这与 $\mathsf{LWE}_{n,m,q,\beta}$ 问题的情况十分相似，后者的参数 $n$ 也没有太大影响。与那种情况一样，将其简记为 $\mathsf{SIS}_{n,q,\beta}$。
 
-定义 4 中的 $\mathsf{SIS}_{n,m,q,\beta}$ 问题是用 $\ell_{\infty}$ 范数定义的，而 [(36)](#eq-36) 中寻找向量的困难性是用 $\ell_{2}$ 范数描述的。在此使用 $\ell_{\infty}$ 范数来定义该问题，是因为在旨在避免复杂运算的 Dilithium 签名方案中，[^11] 困难问题自然以 $\ell_{\infty}$ 范数表述。要利用 [(36)](#eq-36) 来推断 $\ell_{\infty}$ 范数下问题的困难性，可以注意到，寻找 $\ell_{\infty}$ 范数为 $\beta$ 的向量，至少需要找到一个格向量，其 $\ell_{2}$ 范数为 [(36)](#eq-36) 中的值乘以维数的平方根。
+[定义 4](#definition-4) 中的 $\mathsf{SIS}_{n,m,q,\beta}$ 问题是用 $\ell_{\infty}$ 范数定义的，而 [(36)](#eq-36) 中寻找向量的困难性是用 $\ell_{2}$ 范数描述的。在此使用 $\ell_{\infty}$ 范数来定义该问题，是因为在旨在避免复杂运算的 Dilithium 签名方案中，[^11] 困难问题自然以 $\ell_{\infty}$ 范数表述。要利用 [(36)](#eq-36) 来推断 $\ell_{\infty}$ 范数下问题的困难性，可以注意到，寻找 $\ell_{\infty}$ 范数为 $\beta$ 的向量，至少需要找到一个格向量，其 $\ell_{2}$ 范数为 [(36)](#eq-36) 中的值乘以维数的平方根。
 
 [^11]: Dilithium 签名方案中的所有采样都采用均匀分布。如果改用计算上稍复杂的分布进行采样，就有可能得到效率更高的签名方案版本（如 \[[Lyu12](#ref-lyu12), [DFPS22](#ref-dfps22)\]）。
+
+<a id="figure-2" class="reference-anchor"></a>
 
 ![](output/2024-1287/hybrid_auto/images/47eb1e175499cb736238d652cf998608a770d47a91b82ced225b7f812c070968.jpg)  
 图 2：固定 $n$、$m$、$q$ 并改变 $\beta$ 时，$\mathsf{LWE}_{n,m,q,\beta}$ 和 $\mathsf{SIS}_{n,m,q,\beta}$ 的困难性。这些曲线并非要描述这些问题的具体困难程度，而是说明其困难性对 $\beta$ 的依赖关系。交点大约位于 $\beta = q^{n/(n+m)}$。
@@ -718,7 +722,7 @@ $$
 
 现在用格的语言重新表述[第 2.3 节](#23-lwe)中的 $\mathsf{LWE}_{n,m,q,\beta}$ 问题。若随机选择 $\mathbf{A} \leftarrow \mathbb{Z}_{q}^{n \times m}$，并随机选择 $\mathbf{s} \leftarrow [\beta]^{m}$、$\mathbf{e} \leftarrow [\beta]^{n}$，然后输出 $(\mathbf{A}, \mathbf{t} = \mathbf{A}\mathbf{s} + \mathbf{e})$，这就等价于输出一个由随机 $\mathbf{A}$ 定义的格 $\Lambda = \mathcal{L}_{q}^{\perp}([\mathbf{A} \mid \mathbf{I}_{n}])$，以及 $\mathbb{Z}^{m+n}/\Lambda$ 中的一个陪集 $\mathbf{t}$，使其满足 $\Delta_{\infty}^{C}(\mathbf{t}, \Lambda) \leq \beta$。另一方面，对于随机的 $\mathbf{u} \leftarrow \mathbb{Z}_{q}^{n}$，输出 $(\mathbf{A}, \mathbf{u})$ 相当于输出格 $\Lambda$ 和 $\mathbb{Z}^{m+n}/\Lambda$ 中的一个随机陪集。因此，$\mathsf{LWE}_{n,m,q,\beta}$ 问题可以重新表述为：尝试区分靠近格的陪集与随机陪集。
 
-在本加密方案中，$m = n$，且正确性要求 $\beta^2 = O(q / \sqrt{m})$，因此 $\beta \ll \sqrt{q}$。由推论 1 可知，这意味着随机陪集到格的距离将大于 $\beta$。因此，对于使加密方案能够正常工作的参数，$\mathsf{LWE}_{n,m,q,\beta}$ 问题可以看作区分靠近格的陪集与远离格的陪集。
+在本加密方案中，$m = n$，且正确性要求 $\beta^2 = O(q / \sqrt{m})$，因此 $\beta \ll \sqrt{q}$。由[推论 1](#corollary-1) 可知，这意味着随机陪集到格的距离将大于 $\beta$。因此，对于使加密方案能够正常工作的参数，$\mathsf{LWE}_{n,m,q,\beta}$ 问题可以看作区分靠近格的陪集与远离格的陪集。
 
 现在可以说明如何利用求解 $\mathsf{SIS}$ 的算法来求解 $\mathsf{LWE}$。若给定一个 $\mathsf{LWE}_{n,m,q,\beta}$ 实例 $(\mathbf{A},\mathbf{t}=\mathbf{A}\mathbf{s}+\mathbf{e})$，将其与随机实例区分的思路是寻找短向量 $\mathbf{r}_{1},\mathbf{r}_{2}$，使得
 
@@ -766,7 +770,7 @@ $$
 
 ### 3.4 实用参数
 
-表 1：对于一些类似于 Kyber 加密（ML-KEM）方案所用参数的参数，$\mathsf{LWE}_{m,q,\beta}$ 问题的 $\delta$ 困难性的近似值
+<span id="table-1" class="reference-anchor">表 1</span>：对于一些类似于 Kyber 加密（ML-KEM）方案所用参数的参数，$\mathsf{LWE}_{m,q,\beta}$ 问题的 $\delta$ 困难性的近似值
 
 | $\mathsf{LWE}_{m,q,\beta}$ 参数 |         |          |          |
 | ------------------------------- | ------- | -------- | -------- |
@@ -775,7 +779,7 @@ $$
 | 768                             | 2       | $2^{12}$ | 1.0029   |
 | 1024                            | 2       | $2^{12}$ | 1.0022   |
 
-表 2：对于一些类似于 Dilithium（ML-DSA）签名方案所用参数的参数，$\mathsf{LWE}_{m,q,\beta}$ 和 $\mathsf{SIS}_{n,q,\beta}$ 问题的 $\delta$ 困难性的近似值。
+<span id="table-2" class="reference-anchor">表 2</span>：对于一些类似于 Dilithium（ML-DSA）签名方案所用参数的参数，$\mathsf{LWE}_{m,q,\beta}$ 和 $\mathsf{SIS}_{n,q,\beta}$ 问题的 $\delta$ 困难性的近似值。
 
 | $\mathsf{LWE}_{m,q,\beta}$ 参数 |         |          |          |
 | ------------------------------- | ------- | -------- | -------- |
@@ -791,9 +795,9 @@ $$
 | 1536                            | $2^{20}$ | $2^{23}$ | 1.0032   |
 | 2048                            | $2^{20}$ | $2^{23}$ | 1.0025   |
 
-在[第 2.3.1 节](#231-lwe)中看到了基于 LWE 问题的加密方案构造。表 1 列出了一些示例参数，它们类似于具体实用实例中使用的参数，尤其类似于将在[第 4.7 节](#47-crystals-kyberml-kem)介绍的 Kyber（ML-KEM）方案中的参数。在[第 5 节](#5-sigma)构建签名方案时，方案的安全性同时依赖于 SIS 问题和 LWE 问题的困难性。表 2 给出了该方案实例化时使用的示例参数。
+在[第 2.3.1 节](#231-lwe)中看到了基于 LWE 问题的加密方案构造。[表 1](#table-1) 列出了一些示例参数，它们类似于具体实用实例中使用的参数，尤其类似于将在[第 4.7 节](#47-crystals-kyberml-kem)介绍的 Kyber（ML-KEM）方案中的参数。在[第 5 节](#5-sigma)构建签名方案时，方案的安全性同时依赖于 SIS 问题和 LWE 问题的困难性。[表 2](#table-2) 给出了该方案实例化时使用的示例参数。
 
-需要指出，这些表中的参数是根据目前已知最好的格约化算法设定的（参见维护完善的在线 Lattice Estimator 项目 \[[APS15](#ref-aps15)\]）。如，观察图 2 中 LWE 的困难性曲线，可以看到随着噪声 $\beta$ 增大，问题的困难性单调增加，没有任何突然的跃升。具体而言，如果 $q/\beta = 2^{m/k}$，其中 $m$ 是格的维数且 $1 \leq k \leq m$，那么目前已知最好的算法求解 LWE 问题所需的时间（忽略多项式因子）约为 $2^{k}$。
+需要指出，这些表中的参数是根据目前已知最好的格约化算法设定的（参见维护完善的在线 Lattice Estimator 项目 \[[APS15](#ref-aps15)\]）。如，观察[图 2](#figure-2) 中 LWE 的困难性曲线，可以看到随着噪声 $\beta$ 增大，问题的困难性单调增加，没有任何突然的跃升。具体而言，如果 $q/\beta = 2^{m/k}$，其中 $m$ 是格的维数且 $1 \leq k \leq m$，那么目前已知最好的算法求解 LWE 问题所需的时间（忽略多项式因子）约为 $2^{k}$。
 
 但也不排除这种可能：对于所有“较小”的 $\beta$ 值，问题都很容易，而在某个位置困难性会突然跃升。事实上，在对应于某个代数环的理想的格中寻找短向量的问题，恰好就出现了这种情况 \[[CGS14](#ref-cgs14), [BS16](#ref-bs16), [CDPR16](#ref-cdpr16), [CDW17](#ref-cdw17)\]。当 $q/\beta > 2^{\sqrt{m}}$（即上一段中的 $k$ 小于 $\sqrt{m}$）时，该问题可以在量子多项式时间内求解（而非 $2^{k}$ 时间）；但一旦比值 $q/\beta$ 变小，即 $k > \sqrt{m}$，问题的困难性就会跃升回 $2^{k}$。因此，完全有可能存在某种尚未发明的（量子）算法，在比值 $q/\beta$ 的某一范围内表现好得多，却在其他范围内没有任何改进。所以，从安全性角度出发，基于 $q/\beta$ 尽可能小的 $\mathsf{LWE}_{n,m,q,\beta}$ 问题的困难性来构建密码方案，可能更为稳妥。
 
@@ -919,9 +923,9 @@ $$
 
 ### 4.2 广义 LWE 与 SIS 问题
 
-现在介绍一种定义在一般环 $\mathcal{R}_{f}$ 上的 LWE 问题版本，而不像定义 1 那样仅定义在 $\mathbb{Z}$ 上。类似地，在此将使用环 $\mathcal{R}_{q,f}$；它与环 $\mathcal{R}_{f}$ 相似，只是多项式系数属于 $\mathbb{Z}_{q}$ 而非 $\mathbb{Z}$。在格的相关文献中，环 $\mathcal{R}_{q,f}$ 通常写作 $\mathbb{Z}_{q}[X]/(f(X))$。
+现在介绍一种定义在一般环 $\mathcal{R}_{f}$ 上的 LWE 问题版本，而不像[定义 1](#definition-1) 那样仅定义在 $\mathbb{Z}$ 上。类似地，在此将使用环 $\mathcal{R}_{q,f}$；它与环 $\mathcal{R}_{f}$ 相似，只是多项式系数属于 $\mathbb{Z}_{q}$ 而非 $\mathbb{Z}$。在格的相关文献中，环 $\mathcal{R}_{q,f}$ 通常写作 $\mathbb{Z}_{q}[X]/(f(X))$。
 
-定义 5. 对于正整数 $m, n, q, \beta < q$ 以及环 $\mathcal{R}_{q,f}$，$\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 问题要求区分以下两个分布：
+<span id="definition-5" class="reference-anchor">定义 5</span>. 对于正整数 $m, n, q, \beta < q$ 以及环 $\mathcal{R}_{q,f}$，$\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 问题要求区分以下两个分布：
 
 1. $(\mathbf{A},\mathbf{A}\mathbf{s} + \mathbf{e})$，其中 $\mathbf{A}\leftarrow \mathcal{R}_{q,f}^{n\times m},\mathbf{s}\leftarrow [\beta ]^{m},\mathbf{e}\leftarrow [\beta ]^{n}$
 
@@ -929,9 +933,9 @@ $$
 
 与前面一样，除非参数 $n$ 很大，否则尚无已知证据表明它会影响问题的困难性，因此通常简记为$\mathcal{R}_{q,f}$-$\mathsf{LWE}_{m,\beta}$  。上面对广义 LWE 问题的定义以及下面的密码系统，沿用了 \[[LPR10](#ref-lpr10), [BV11](#ref-bv11), [LPR13b](#ref-lpr13b), [LS15](#ref-ls15)\] 这一系列工作；这些工作将其安全性与某些格问题的最坏情况实例联系起来。
 
-类似地，可以将定义 4 中的 SIS 问题推广如下 \[[PR06](#ref-pr06), [LM06](#ref-lm06), [LS15](#ref-ls15)\]：
+类似地，可以将[定义 4](#definition-4) 中的 SIS 问题推广如下 \[[PR06](#ref-pr06), [LM06](#ref-lm06), [LS15](#ref-ls15)\]：
 
-定义 6. 对于正整数 $m$、$n$、$q$ 以及 $\beta < q$ 和环 $\mathcal{R}_{q,f}$，$\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m,\beta}$ 问题要求：对于随机选取的矩阵 $\mathbf{A} \leftarrow \mathcal{R}_{q,f}^{n \times m}$，寻找向量 $\mathbf{s}_{1} \in [\beta]^{m}$ 和 $\mathbf{s}_{2} \in [\beta]^{n}$（两者不同时为 $0$），使得 $\mathbf{As}_{1} + \mathbf{s}_{2} = \mathbf{0} \pmod{q}$。
+<span id="definition-6" class="reference-anchor">定义 6</span>. 对于正整数 $m$、$n$、$q$ 以及 $\beta < q$ 和环 $\mathcal{R}_{q,f}$，$\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m,\beta}$ 问题要求：对于随机选取的矩阵 $\mathbf{A} \leftarrow \mathcal{R}_{q,f}^{n \times m}$，寻找向量 $\mathbf{s}_{1} \in [\beta]^{m}$ 和 $\mathbf{s}_{2} \in [\beta]^{n}$（两者不同时为 $0$），使得 $\mathbf{As}_{1} + \mathbf{s}_{2} = \mathbf{0} \pmod{q}$。
 
 在文献中，广义 LWE / 广义 SIS 问题通常称为环 LWE / 环 SIS，或模 LWE / 模 SIS。在 NIST 为格标准选定的名称 ML-KEM 和 ML-DSA 中，“ML”表示“模格”。
 
@@ -1019,7 +1023,7 @@ NTRU 问题与上述问题非常相似，区别在于多项式 $a$ 不是从 $\m
 
 NTRU 问题的形式化定义如下：
 
-定义 7. 令 $p = 2\beta + 1$。给定 $(a, as + e)$，其中 $a = pg_{1}g_{2}^{-1}$，$g_{1}, g_{2}, s, e \leftarrow [\beta]$，且 $g_{2}$ 在 $\mathcal{R}_{q,f}$ 和 $\mathcal{R}_{p,f}$ 中可逆，要求找到 $e$。
+<span id="definition-7" class="reference-anchor">定义 7</span>. 令 $p = 2\beta + 1$。给定 $(a, as + e)$，其中 $a = pg_{1}g_{2}^{-1}$，$g_{1}, g_{2}, s, e \leftarrow [\beta]$，且 $g_{2}$ 在 $\mathcal{R}_{q,f}$ 和 $\mathcal{R}_{p,f}$ 中可逆，要求找到 $e$。
 
 基于上述问题的假定困难性，可以按如下方式构造一个陷门单向函数族：为从该函数族中生成一个随机元素，选择秘密的可逆多项式 $g_{1}, g_{2} \leftarrow [\beta]$，其中 $g_{2}$ 在 $\mathcal{R}_{q,f}$ 和 $\mathcal{R}_{p,f}$ 中可逆，并将公钥设为
 
@@ -1121,7 +1125,7 @@ $$
 
 随后利用上述结果重构 $ab \bmod X^d + \alpha$。
 
-引理 5 将说明，分解[（64）](#eq-64)、[（65）](#eq-65)需要在 $\mathbb{Z}_q$ 上进行 $d$ 次加法和 $d/2$ 次乘法，而从[（66）](#eq-66)重构 $ab \bmod X^d + \alpha$ 所需的运算次数相同。因此，计算乘积 $ab$ 需要 $2d$ 次加法、$d$ 次乘法，以及环 $\mathbb{Z}_q[X] / (X^{d/2} \pm r)$ 上的两次乘法。由于后一个环上的乘法仍需 $O(d^2)$ 时间，目前还看不出取得了什么进展；但是，如果多项式 $X^{d/2} - r$ 能进一步分解为 $(X^{d/4} - s)(X^{d/4} + s)$（类似地，$X^{d/2} + r = (X^{d/4} - t)(X^{d/4} + t)$），就可以递归地计算[（66）](#eq-66)！
+[引理 5](#lemma-5) 将说明，分解[（64）](#eq-64)、[（65）](#eq-65)需要在 $\mathbb{Z}_q$ 上进行 $d$ 次加法和 $d/2$ 次乘法，而从[（66）](#eq-66)重构 $ab \bmod X^d + \alpha$ 所需的运算次数相同。因此，计算乘积 $ab$ 需要 $2d$ 次加法、$d$ 次乘法，以及环 $\mathbb{Z}_q[X] / (X^{d/2} \pm r)$ 上的两次乘法。由于后一个环上的乘法仍需 $O(d^2)$ 时间，目前还看不出取得了什么进展；但是，如果多项式 $X^{d/2} - r$ 能进一步分解为 $(X^{d/4} - s)(X^{d/4} + s)$（类似地，$X^{d/2} + r = (X^{d/4} - t)(X^{d/4} + t)$），就可以递归地计算[（66）](#eq-66)！
 
 具体来说，现在可以通过递推关系计算整个算法的运行时间。令 $T(d)$ 表示在 $\mathbb{Z}_{q}[X]/(X^{d}+\alpha)$ 中将两个多项式相乘的时间，$A$ 和 $M$ 分别表示在 $\mathbb{Z}_{q}$ 中进行一次整数加法和乘法所需的时间。根据上述讨论，递推关系为
 
@@ -1143,7 +1147,7 @@ $$
 
 其中 $T(1) = M$。因此，计算环 $\mathbb{Z}_{q}[X]/(X^{d} + \alpha)$ 中的一个乘积，所需运算可以少至 $\mathbb{Z}_{q}$ 上的 $2d \log d$ 次整数加法和 $d(\log d + 1)$ 次乘法。
 
-当 $\alpha = 1$ 时，上述方法给出了环 $\mathcal{R}_{q,X^d + 1} = \mathbb{Z}_q[X] / (X^d + 1)$ 上的高效乘法算法。若要将多项式 $X^d + 1$ 一直分解为一阶因子，需要 $-1$ 存在 $d^{th}$ 次根，换言之，乘法群 $\mathbb{Z}_{q}^{*}$ 中存在一个 $2d^{th}$ 次本原单位根。[^15] 只要模数 $q$ 是满足 $q \equiv 1 \pmod{2d}$ 的素数，这样的单位根就存在（见引理 7）。即使 $q$ 不满足后一条件，仍然可以执行 NTT 算法，只是无法一直递归到一阶多项式。如，若 $q \equiv 1 \pmod{d}$，则多项式 $X^{d} + 1$ 可以分解为二阶因子的乘积。这意味着在最底层，逐分量乘法将在某些环 $\mathbb{Z}_{q}[X]/(X^{2} - r_{i})$ 中进行，其中 $r_{i} \in \mathbb{Z}_{q}^{*}$。虽然这种基本乘法需要的运算不止 $\mathbb{Z}_{q}$ 上的一次乘法，但仍可用少量常数次乘法和加法完成（即 $\mathbb{Z}_{q}$ 上的 $5$ 次乘法和 $2$ 次加法）。而且，由于少做了一层分解，总运算次数实际上几乎相同。[^16]
+当 $\alpha = 1$ 时，上述方法给出了环 $\mathcal{R}_{q,X^d + 1} = \mathbb{Z}_q[X] / (X^d + 1)$ 上的高效乘法算法。若要将多项式 $X^d + 1$ 一直分解为一阶因子，需要 $-1$ 存在 $d^{th}$ 次根，换言之，乘法群 $\mathbb{Z}_{q}^{*}$ 中存在一个 $2d^{th}$ 次本原单位根。[^15] 只要模数 $q$ 是满足 $q \equiv 1 \pmod{2d}$ 的素数，这样的单位根就存在（见[引理 7](#lemma-7)）。即使 $q$ 不满足后一条件，仍然可以执行 NTT 算法，只是无法一直递归到一阶多项式。如，若 $q \equiv 1 \pmod{d}$，则多项式 $X^{d} + 1$ 可以分解为二阶因子的乘积。这意味着在最底层，逐分量乘法将在某些环 $\mathbb{Z}_{q}[X]/(X^{2} - r_{i})$ 中进行，其中 $r_{i} \in \mathbb{Z}_{q}^{*}$。虽然这种基本乘法需要的运算不止 $\mathbb{Z}_{q}$ 上的一次乘法，但仍可用少量常数次乘法和加法完成（即 $\mathbb{Z}_{q}$ 上的 $5$ 次乘法和 $2$ 次加法）。而且，由于少做了一层分解，总运算次数实际上几乎相同。[^16]
 
 [^15]: 回顾一下，若元素 $r$ 满足 $r^k=1$，并且对所有 $0<j<k$ 都有 $r^j\neq1$，则称 $r$ 为一个 $k$ 次单位根。如果 $r$ 是一个 $k$ 次单位根，那么必有 $r^{k/2}=-1$。
 
@@ -1153,7 +1157,7 @@ $$
 
 下面证明前文提到的引理，它说明计算[（64）](#eq-64)和[（65）](#eq-65)，以及从[（66）](#eq-66)的 CRT（Chinese Remainder Theorem，中国剩余定理） 表示重构环中的元素，都需要 $d$ 次加法和 $d/2$ 次乘法。
 
-引理 5. 假设多项式 $g(X) = X^n + \alpha$ 可以写为
+<span id="lemma-5" class="reference-anchor">引理 5</span>. 假设多项式 $g(X) = X^n + \alpha$ 可以写为
 
 $$
 X ^ {n} + \alpha \equiv (X ^ {n / 2} - r) (X ^ {n / 2} + r) \pmod {q},
@@ -1201,7 +1205,7 @@ $$
 
 上一节给出了环 $\mathcal{R}_{q,X^{d}+1}$ 上非常高效的乘法算法，也说明了从安全性角度来看，最好让多项式 $X^{d}+1$ 在 $Z[X]$ 上不可约。本节陈述并证明环 $\mathcal{R}_{q,X^{d}+1}$ 的一些有用性质。第一个引理指出，多项式 $X^{d}+1$ 在整数上不可约，当且仅当 $d$ 是 $2$ 的幂。
 
-引理 6. 多项式 $X^d + 1$ 在 $\mathbb{Z}[X]$ 上不可约，当且仅当 $d$ 是 $2$ 的幂。
+<span id="lemma-6" class="reference-anchor">引理 6</span>. 多项式 $X^d + 1$ 在 $\mathbb{Z}[X]$ 上不可约，当且仅当 $d$ 是 $2$ 的幂。
 
 证明. 令 $\Phi_{k}(X)$ 表示第 $k^{th}$ 个分圆多项式，并回顾：对任意 $n$，
 
@@ -1219,7 +1223,7 @@ $$
 
 下面的引理有助于选择模数 $q$，使多项式 $X^{d} + 1$ 能够分解为低阶多项式。
 
-表 3：Kyber 三种实例的参数。这三种方案在实际应用中的安全性，预期分别不低于 AES-128、AES-192 和 AES-256。
+<span id="table-3" class="reference-anchor">表 3</span>：Kyber 三种实例的参数。这三种方案在实际应用中的安全性，预期分别不低于 AES-128、AES-192 和 AES-256。
 
 |            | $k$  | $\eta_1$ | $\eta_2$ | $d_u$ | $d_v$ | 解密错误概率 | 公钥大小 | 密文大小 |
 | ---------- | ---- | -------- | -------- | ----- | ----- | ------------ | -------- | -------- |
@@ -1227,7 +1231,7 @@ $$
 | Kyber-768  | 3    | 2        | 2        | 10    | 4     | $2^{-164}$   | 1184 B   | 1088 B   |
 | Kyber-1024 | 4    | 2        | 2        | 11    | 5     | $2^{-174}$   | 1568 B   | 1568 B   |
 
-引理 7. 设 $d \geq k \geq 1$，其中 $k \mid d$，且 $q \equiv 1 \pmod{2k}$ 为素数。则存在 $k$ 个互不相同、满足 $r_i^k \equiv -1 \pmod{q}$ 的 $r_i \in \mathbb{Z}_q^*$，使得
+<span id="lemma-7" class="reference-anchor">引理 7</span>. 设 $d \geq k \geq 1$，其中 $k \mid d$，且 $q \equiv 1 \pmod{2k}$ 为素数。则存在 $k$ 个互不相同、满足 $r_i^k \equiv -1 \pmod{q}$ 的 $r_i \in \mathbb{Z}_q^*$，使得
 
 <a id="eq-69"></a>
 
@@ -1239,9 +1243,9 @@ $$
 
 最后一个引理在本文其他地方不会用到，但为完整起见，仍将它列在这里，因为在一些更高级的应用中，记住这一点很有用。它指出，对所有素数 $q$，多项式 $X^{d} + 1$ 都不可能不可约；因此，遗憾的是，$\mathcal{R}_{q,X^{d}+1}$ 永远不是域。如果想要一个“近似于域”的环，可以设置环参数（见 \[[LS18](#ref-ls18)\]），使多项式 $X^{d} + 1$ 分解为两个形如 $X^{d/2} \pm r$ 的不可约多项式。
 
-引理 8. 设 $q$ 为奇素数，$d$ 为 4 的倍数。则多项式 $X^d + 1$ 在 $\mathbb{Z}_q[X]$ 上至少可分解为 2 个多项式的乘积。
+<span id="lemma-8" class="reference-anchor">引理 8</span>. 设 $q$ 为奇素数，$d$ 为 4 的倍数。则多项式 $X^d + 1$ 在 $\mathbb{Z}_q[X]$ 上至少可分解为 2 个多项式的乘积。
 
-证明. 若 $q \equiv 1 \pmod{4}$，则 $X^d + 1$ 模 $q$ 的因子，就是引理 7 中取 $k = 2$ 时得到的因子。
+证明. 若 $q \equiv 1 \pmod{4}$，则 $X^d + 1$ 模 $q$ 的因子，就是[引理 7](#lemma-7) 中取 $k = 2$ 时得到的因子。
 
 若 $q \equiv 3 \pmod{4}$，则对所有 $x \in \mathbb{Z}_{q}^{*}$，$x$ 和 $-x$ 中恰有一个是模 $q$ 的二次剩余[^17]。若 $2$ 是模 $q$ 的二次剩余，取 $b = 1$；若 $-2$ 是，则取 $b = -1$。最后，取 $r$ 使 $r^{2} \equiv 2 \cdot b \pmod{q}$。于是
 
@@ -1257,6 +1261,8 @@ $$
 
 本节将前面的内容整合起来，完整介绍 NIST 标准化的 CRYSTALS-Kyber 方案（NIST 将其命名为 ML-KEM），该方案的安全性基于广义 LWE 问题的困难性。该方案在环 $\mathcal{R}_{3329,X^{256}+1}$ 上运作，秘密值从二项分布中采样，而非采用本文迄今一直使用的均匀分布。使用二项分布（对于正整数 $\eta$，记作 $\psi_{\eta}$）的主要原因很简单：它更容易采样。
 
+<a id="figure-3" class="reference-anchor"></a>
+
 公共参数：$k, \eta_1, \eta_2, d_u, d_v \in \mathbb{Z}^+$
 
 | CPA-KeyGen                                                   | CPA-Encrypt$(pk,m)$                                          | CPA-Decrypt$(sk,ciphertext)$                                 |
@@ -1270,11 +1276,11 @@ $$
 
 
 
-定义 8. 对整数 $\eta$，二项分布 $\psi_{\eta}$ 中的元素按如下方式生成：随机生成 $a_{1},\ldots,a_{\eta},b_{1},\ldots,b_{\eta}\leftarrow\{0,1\}$，并输出 $\sum a_{i}-\sum b_{i}$。此定义自然地推广到多项式：对于 $a\in \mathcal{R}_{f}$，记 $a\leftarrow\psi_{\eta}$，表示 $a$ 的每个整数系数都按照 $\psi_{\eta}$ 独立采样。类似地，对于维数为 $k$ 的（多项式）向量，记 $a\leftarrow\psi_{\eta}^{k}$，表示每个元素都按照 $\psi_{\eta}$ 采样。
+<span id="definition-8" class="reference-anchor">定义 8</span>. 对整数 $\eta$，二项分布 $\psi_{\eta}$ 中的元素按如下方式生成：随机生成 $a_{1},\ldots,a_{\eta},b_{1},\ldots,b_{\eta}\leftarrow\{0,1\}$，并输出 $\sum a_{i}-\sum b_{i}$。此定义自然地推广到多项式：对于 $a\in \mathcal{R}_{f}$，记 $a\leftarrow\psi_{\eta}$，表示 $a$ 的每个整数系数都按照 $\psi_{\eta}$ 独立采样。类似地，对于维数为 $k$ 的（多项式）向量，记 $a\leftarrow\psi_{\eta}^{k}$，表示每个元素都按照 $\psi_{\eta}$ 采样。
 
 CRYSTALS-Kyber 这一具有 CCA 安全性的 KEM，其核心是一个具有 CPA 安全性的加密方案。将后者转换为 CCA 安全的 KEM 所用的是一种通用转换，会在[第 4.8 节](#48-cpa-cca-kem)简要介绍。不过，本节余下部分将只讨论 CPA 安全的加密。
 
-图 3 给出了 CPA 安全的 Kyber 加密方案。Kyber 的安全参数是 $k, \eta_{1}, \eta_{2}$，其中 $k$ 是不同安全级别之间主要调整的参数。参数 $d_{u}$ 和 $d_{v}$ 指定集合 $\mathcal{S}$ 大小的对数（参见图 1、式[（18）](#eq-18)）；密文的不同部分会被舍入到相应集合中。这些数值决定了密文大小和解密错误概率。
+[图 3](#figure-3) 给出了 CPA 安全的 Kyber 加密方案。Kyber 的安全参数是 $k, \eta_{1}, \eta_{2}$，其中 $k$ 是不同安全级别之间主要调整的参数。参数 $d_{u}$ 和 $d_{v}$ 指定集合 $\mathcal{S}$ 大小的对数（参见[图 1](#figure-1)、式[（18）](#eq-18)）；密文的不同部分会被舍入到相应集合中。这些数值决定了密文大小和解密错误概率。
 
 密钥生成过程与[（51）](#eq-51)完全一致，唯一的区别是秘密向量 $\mathbf{s}, \mathbf{e} \in \mathcal{R}_{X^{256} + 1}^k$ 按照二项分布而非均匀分布生成。为了加密系数为 $0/1$ 的多项式 $m \in \mathcal{R}_{X^{256} + 1}$，加密过程从二项分布 $\psi_\eta$ 中生成向量 $\mathbf{r}, \mathbf{e}_1 \in \mathcal{R}_{X^{256} + 1}^k$ 以及环元素 $e_2 \in \mathcal{R}_{X^{256} + 1}$（$\eta$ 的取值可以不同，稍后会解释其中的直觉），再按照[（52）](#eq-52)计算未压缩的密文。随后，对密文应用压缩函数（见第 [2.5.1](#251) 和 [2.5.2](#252) 节），以减小密文大小。解密函数与[（54）](#eq-54)相同，其中利用压缩函数，如[（20）](#eq-20)所示恢复 $0/1$ 系数。
 
@@ -1327,7 +1333,7 @@ v^{\prime} - \mathbf{u}^{\prime T}\mathbf{s}
 \end{array}
 $$
 
-其中 $e' \in \mathcal{R}_{X^{256} + 1}, \mathbf{e}'' \in \mathcal{R}_{X^{256} + 1}^k$ 的系数对应于引理 1 中的 $\eta$。用 $\mathbf{As} + \mathbf{e}$ 替换 $\mathbf{t}$，可得
+其中 $e' \in \mathcal{R}_{X^{256} + 1}, \mathbf{e}'' \in \mathcal{R}_{X^{256} + 1}^k$ 的系数对应于[引理 1](#lemma-1) 中的 $\eta$。用 $\mathbf{As} + \mathbf{e}$ 替换 $\mathbf{t}$，可得
 
 <a id="eq-70"></a>
 
@@ -1355,13 +1361,13 @@ $$
 \mathbf {r} ^ {T} \mathbf {e} + e _ {2} + e ^ {\prime} - \left(\mathbf {e} _ {1} + \mathbf {e} ^ {\prime \prime}\right) ^ {T} \mathbf {s}\tag{71}
 $$
 
-的绝对值都小于 $q / 4$，上述结果就等于 $m$。计算该概率的方法与[第 2.3.2 节](#232)相同。已在[第 4.3 节](#43-lwe)（见[（55）](#eq-55)）讨论了如何将这些技术推广到环的情形。[（55）](#eq-55)与[（71）](#eq-71)之间唯一的区别是，后者还包含压缩和解压缩操作产生的项 $e'$ 和 $\mathbf{e}''$，即它们引入的误差。假设被压缩的项服从均匀随机分布，便可计算 $e'$ 和 $\mathbf{e}''$ 的每个系数的精确概率分布，也就是随机 $x \leftarrow \mathbb{Z}_q$ 下 $\left\lceil \left\lceil x \right\rfloor_{q \to 2^{d_v}} \right\rfloor_{2^{d_v} \to q}$ 的概率分布（另一种情形则用 $d_u$ 代替 $d_v$）。计算出单个系数发生错误的精确概率之后，就可以应用并集界（即乘以 $256$），得到错误概率的上界。相应数值见表 3。
+的绝对值都小于 $q / 4$，上述结果就等于 $m$。计算该概率的方法与[第 2.3.2 节](#232)相同。已在[第 4.3 节](#43-lwe)（见[（55）](#eq-55)）讨论了如何将这些技术推广到环的情形。[（55）](#eq-55)与[（71）](#eq-71)之间唯一的区别是，后者还包含压缩和解压缩操作产生的项 $e'$ 和 $\mathbf{e}''$，即它们引入的误差。假设被压缩的项服从均匀随机分布，便可计算 $e'$ 和 $\mathbf{e}''$ 的每个系数的精确概率分布，也就是随机 $x \leftarrow \mathbb{Z}_q$ 下 $\left\lceil \left\lceil x \right\rfloor_{q \to 2^{d_v}} \right\rfloor_{2^{d_v} \to q}$ 的概率分布（另一种情形则用 $d_u$ 代替 $d_v$）。计算出单个系数发生错误的精确概率之后，就可以应用并集界（即乘以 $256$），得到错误概率的上界。相应数值见[表 3](#table-3)。
 
 安全性。Kyber 的安全性基于 $\mathcal{R}_{3329,X^{256}+1}$-$\mathsf{LWE}_{k,\psi_{2}}$ 问题的困难性。其安全性证明与第 [2.3.1](#231-lwe) 和 [4.3](#43-lwe) 节中方案的证明完全相同。需要注意的是，在 Kyber-512 中，$\eta_{1}$ 被设为 $3$，而 $\eta_{2}=2$。这意味着，将公钥 $(\mathbf{A},\mathbf{t})$ 与均匀随机公钥区分开的困难性，基于 $\mathcal{R}_{3329,X^{256}+1}$-$\mathsf{LWE}_{k,\psi_{3}}$ 的困难性；而将密文与均匀分布区分开的困难性，则基于一种“混合”分布，其中 $\mathbf{r}$ 的系数从 $\psi_{3}$ 中选取，而 $\mathbf{e}_{1}$ 和 $e_{2}$ 的系数来自 $\psi_{2}$。这至少与 $\mathcal{R}_{3329,X^{256}+1}$-$\mathsf{LWE}_{k,\psi_{2}}$ 问题一样困难，但请注意，在此输出的并不是 $\mathbf{r}^{T}\mathbf{A}+\mathbf{e}_{1}^{T}$，而是 $\left[\mathbf{r}^{T}\mathbf{A}+\mathbf{e}_{1}^{T}\right]_{q\to2^{d_{u}}}$。这意味着，与舍入学习问题（见[第 2.5.3 节](#253-learning-with-rounding)）一样，又加入了一些额外误差。来自 $\psi_{2}$ 的系数与从 $3329$ 压缩到大小为 $2^{d_{u}}=1024$ 的集合时产生的误差，二者合计的总误差实际上比 $\psi_{3}$ 稍大。因此，虽然严格来说，将密文与均匀随机字符串区分开的困难性基于 $\mathcal{R}_{3329,X^{256}+1}$-$\mathsf{LWE}_{k,\psi_{2}}$ 的困难性，但在实践中，获得了额外几个比特的启发式安全性，该问题应当与 $\mathcal{R}_{3329,X^{256}+1}$-$\mathsf{LWE}_{k,\psi_{3}}$ 一样困难。将 $s$、$e$、$r$ 的系数从 $\psi_{2}$ 改为从 $\psi_{3}$ 中采样，从而获得这种额外启发式安全性，所付出的代价是解密错误概率增大。
 
-计算效率。有几种技巧可以显著提升图 3 中方案的效率。首先，由于公钥部分 $\mathbf{A}$ 是均匀随机生成的，因此无需存储它。只需存储一个 256 比特的种子 $\rho$，并通过 $\mathcal{H}(\rho)$ 生成 $\mathbf{A}$；其中 $\mathcal{H}$ 是某种密码学哈希函数（如 SHAKE），能够将种子扩展为任意长度、看起来随机的字符串。因此，公钥只需包含 $(\rho, \mathbf{t})$。
+计算效率。有几种技巧可以显著提升[图 3](#figure-3) 中方案的效率。首先，由于公钥部分 $\mathbf{A}$ 是均匀随机生成的，因此无需存储它。只需存储一个 256 比特的种子 $\rho$，并通过 $\mathcal{H}(\rho)$ 生成 $\mathbf{A}$；其中 $\mathcal{H}$ 是某种密码学哈希函数（如 SHAKE），能够将种子扩展为任意长度、看起来随机的字符串。因此，公钥只需包含 $(\rho, \mathbf{t})$。
 
-如[第 4.6 节](#46)所述，只要 $q$ 满足相应形式（引理 7），使 $X^{d}+1$ 能够分解为低阶多项式，NTT 算法便能在形如 $\mathcal{R}_{q,X^{d}+1}$ 的环上实现非常高效的乘法。Kyber 的模数（即 $3329$）模 $256$ 同余于 $1$，因此多项式 $X^{256}+1$ 分裂为形如 $(X^{2}-r_{i})$ 的二阶多项式的乘积。[^18] 对于多项式 $a\in \mathcal{R}_{X^{256}+1}$，用 $\hat{a}$ 表示它的 NTT 表示：
+如[第 4.6 节](#46)所述，只要 $q$ 满足相应形式（[引理 7](#lemma-7)），使 $X^{d}+1$ 能够分解为低阶多项式，NTT 算法便能在形如 $\mathcal{R}_{q,X^{d}+1}$ 的环上实现非常高效的乘法。Kyber 的模数（即 $3329$）模 $256$ 同余于 $1$，因此多项式 $X^{256}+1$ 分裂为形如 $(X^{2}-r_{i})$ 的二阶多项式的乘积。[^18] 对于多项式 $a\in \mathcal{R}_{X^{256}+1}$，用 $\hat{a}$ 表示它的 NTT 表示：
 
 [^18]: Kyber 选择素数 $3329$ 的原因是，不存在大小相近、能使多项式 $X^{256}+1$ 分解为一次因子的素数（即不存在模 $512$ 同余于 $1$ 的素数）。虽然在未完全分裂的环中实现 NTT 乘法会稍显复杂，但如[第 4.6 节](#46)所述，让 $X^{256}+1$ 分解为一次因子还是二次因子，在计算开销上实际上几乎没有差别。
 
@@ -1381,13 +1387,15 @@ $$
 
 密钥封装机制（KEM）允许双方交换一条随机消息（共享密钥）。它由三个算法组成：KEM-KeyGen、KEM-Encaps 和 KEM-Decaps。密钥生成算法输出一个私钥和一个公钥。封装算法以公钥为输入，输出一个共享密钥和一个密文。解封装算法则以密文和私钥为输入，输出同一个共享密钥。在 CPA 安全的 KEM 中，即使给定公钥和密文，攻击者也无法将共享密钥与均匀分布区分开。对任意 CPA 安全的公钥加密方案，只需加密一条随机消息，并将该消息设为共享密钥，即可构造这样的 KEM。[^19] 若要满足 CCA 安全性，即使攻击者能够访问解封装预言机，并对给定密文之外的任意输入调用该预言机，共享密钥与随机值之间也应保持不可区分。
 
-[^19]: 为了满足稍强一些的“高级”安全定义（本文不作讨论），通常不会直接将消息作为共享密钥输出，而是像图 4 那样，将消息与公钥一起进行哈希，并把哈希结果作为共享密钥。在大多数协议中，将所有公共参数一并作为密码学哈希函数的输入，也是一种良好的密码学实践。
+[^19]: 为了满足稍强一些的“高级”安全定义（本文不作讨论），通常不会直接将消息作为共享密钥输出，而是像[图 4](#figure-4) 那样，将消息与公钥一起进行哈希，并把哈希结果作为共享密钥。在大多数协议中，将所有公共参数一并作为密码学哈希函数的输入，也是一种良好的密码学实践。
 
-从 CPA 安全的公钥加密方案到 CCA 安全的 KEM 的转换，遵循 Fujisaki-Okamoto（FO）变换。Fujisaki-Okamoto 变换背后的直觉，是让解封装预言机对攻击者“毫无用处”：只有当输入密文所对应的消息已经为攻击者所知时，它才会产生非 $\bot$ 输出。实现这一点的方法，是使构造密文时使用的随机性依赖于消息 [^20]，并让解封装算法先解密密文得到消息，再将其重新加密；如果两个密文不匹配，就输出 $\bot$。图 4 给出了这一通用转换。
+从 CPA 安全的公钥加密方案到 CCA 安全的 KEM 的转换，遵循 Fujisaki-Okamoto（FO）变换。Fujisaki-Okamoto 变换背后的直觉，是让解封装预言机对攻击者“毫无用处”：只有当输入密文所对应的消息已经为攻击者所知时，它才会产生非 $\bot$ 输出。实现这一点的方法，是使构造密文时使用的随机性依赖于消息 [^20]，并让解封装算法先解密密文得到消息，再将其重新加密；如果两个密文不匹配，就输出 $\bot$。[图 4](#figure-4) 给出了这一通用转换。
 
 [^20]: 这会使加密方案变成确定性的，但不会造成问题，因为这里加密的始终是随机消息。
 
-公共参数：图 3 中 CPA 加密方案的公共参数
+<a id="figure-4" class="reference-anchor"></a>
+
+公共参数：[图 3](#figure-3) 中 CPA 加密方案的公共参数
 
 | KEM-KeyGen                                          | KEM-Encaps$(pk)$                                         | KEM-Decaps$(sk,c,h,z)$                           |
 | --------------------------------------------------- | -------------------------------------------------------- | ------------------------------------------------ |
@@ -1397,9 +1405,9 @@ $$
 |                                                     | $\text{共享密钥} := K,\; \text{ctxt} := c$               | $\text{if } c \neq c',\text{ then } K' := \perp$ |
 |                                                     |                                                          | $\text{共享密钥} := K'$                          |
 
-图 4：使用 Fujisaki-Okamoto 变换构造的 CCA 安全密钥封装方案。函数 $\mathcal{H}$ 被建模为随机预言机。CPA-KeyGen、CPA-Encrypt 和 CPA-Decrypt 算法与图 3 相同（不过这一构造相当通用）；CPA-Encrypt 的输入中新增的值 $\rho \in \{0, 1\}^{256}$ 表示该过程中使用的随机比特，用于生成 $(\mathbf{r}, \mathbf{e}_{1}, e_{2})$。
+图 4：使用 Fujisaki-Okamoto 变换构造的 CCA 安全密钥封装方案。函数 $\mathcal{H}$ 被建模为随机预言机。CPA-KeyGen、CPA-Encrypt 和 CPA-Decrypt 算法与[图 3](#figure-3) 相同（不过这一构造相当通用）；CPA-Encrypt 的输入中新增的值 $\rho \in \{0, 1\}^{256}$ 表示该过程中使用的随机比特，用于生成 $(\mathbf{r}, \mathbf{e}_{1}, e_{2})$。
 
-专门针对格加密的几处小修改。由于格加密的特点，标准化的 ML-KEM（即 Kyber）对图 4 做了几处修改。与离散对数方案不同，格方案的公钥较大（$\approx 1KB$），而使用 NTT 的代数运算，相比传统密码学中慢得多的幂运算或椭圆曲线乘法，却非常快。因此，在封装和解封装函数中对公钥进行哈希，实际上是一项计算开销相当显著的操作：当方案使用 AVX-2 指令实现时，这部分可能占运行时间的 30% 到 50%。由于在许多实际场景中，解封装算法比密钥生成执行得更频繁（如，一方的公钥可能是固定的），可以在 KEM-KeyGen 算法中预先计算并存储公钥的哈希 $h = \mathcal{G}(pk)$，然后在 KEM-Encaps 算法中将 $\mathcal{G}(pk)$ 作为 $\mathcal{H}$ 的输入（这里并未节省开销），而在 KEM-Decaps 算法中用 $h$ 代替 $pk$。在后一个算法中，只需对 32 字节而非 $\approx 1KB$ 数据进行哈希，从而节省开销。
+专门针对格加密的几处小修改。由于格加密的特点，标准化的 ML-KEM（即 Kyber）对[图 4](#figure-4) 做了几处修改。与离散对数方案不同，格方案的公钥较大（$\approx 1KB$），而使用 NTT 的代数运算，相比传统密码学中慢得多的幂运算或椭圆曲线乘法，却非常快。因此，在封装和解封装函数中对公钥进行哈希，实际上是一项计算开销相当显著的操作：当方案使用 AVX-2 指令实现时，这部分可能占运行时间的 30% 到 50%。由于在许多实际场景中，解封装算法比密钥生成执行得更频繁（如，一方的公钥可能是固定的），可以在 KEM-KeyGen 算法中预先计算并存储公钥的哈希 $h = \mathcal{G}(pk)$，然后在 KEM-Encaps 算法中将 $\mathcal{G}(pk)$ 作为 $\mathcal{H}$ 的输入（这里并未节省开销），而在 KEM-Decaps 算法中用 $h$ 代替 $pk$。在后一个算法中，只需对 32 字节而非 $\approx 1KB$ 数据进行哈希，从而节省开销。
 
 Kyber KEM 的另一项改动是，永远不会输出 $\perp$；当两个密文不匹配时，输出的是一个随机密钥，它由输入密文和密钥生成阶段创建的某个随机秘密值经哈希得到。这样做的理由涉及一些技术细节，而且它在实际中是否增加了安全性，并不十分明确。
 
@@ -1431,7 +1439,7 @@ $$
 
 下面的一个简单证明说明，证明知道式 [(74)](#eq-74) 的解仍然具有实际意义。具体来说，由此可以得出：能够产生这样的 $\bar{\mathbf{s}}_{1}, \bar{\mathbf{s}}_{2}$ 和 $\bar{c}$，就意味着能够求解与矩阵 $\mathbf{A}$ 相关的 Ring-LWE 或 Ring-SIS 问题。
 
-引理 9. 假设存在一个算法，给定 $\mathbf{A} \leftarrow \mathcal{R}_{q,f}^{n \times m}$、$\mathbf{t} = \mathbf{A}\mathbf{s}_1 + \mathbf{s}_2$，其中 $\mathbf{s}_1 \leftarrow [\beta]^m$、$\mathbf{s}_2 \leftarrow [\beta]^n$，它能够找到 $\bar{\mathbf{s}}_1 \in [\bar{\beta}]^m$、$\bar{\mathbf{s}}_2 \in [\bar{\beta}]^n$ 和 $\bar{c} \in [2]$，使得 $\mathbf{A}\bar{\mathbf{s}}_1 + \bar{\mathbf{s}}_2 = \bar{c}\mathbf{t}$。那么存在另一个运行时间相同、成功概率相同的算法，能够求解 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$ 或 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,\bar{\beta}}$ 问题。
+<span id="lemma-9" class="reference-anchor">引理 9</span>. 假设存在一个算法，给定 $\mathbf{A} \leftarrow \mathcal{R}_{q,f}^{n \times m}$、$\mathbf{t} = \mathbf{A}\mathbf{s}_1 + \mathbf{s}_2$，其中 $\mathbf{s}_1 \leftarrow [\beta]^m$、$\mathbf{s}_2 \leftarrow [\beta]^n$，它能够找到 $\bar{\mathbf{s}}_1 \in [\bar{\beta}]^m$、$\bar{\mathbf{s}}_2 \in [\bar{\beta}]^n$ 和 $\bar{c} \in [2]$，使得 $\mathbf{A}\bar{\mathbf{s}}_1 + \bar{\mathbf{s}}_2 = \bar{c}\mathbf{t}$。那么存在另一个运行时间相同、成功概率相同的算法，能够求解 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$ 或 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,\bar{\beta}}$ 问题。
 
 证明。令 $\mathcal{A}$ 为假设中的算法，并假设给定一个均匀随机矩阵 $\bar{\mathbf{A}} = [\mathbf{A} \mid \mathbf{t}] \in \mathcal{R}_{q,f}^{n \times (m+1)}$，它是 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,\bar{\beta}}$ 问题的一个实例。将 $(\mathbf{A}, \mathbf{t})$ 交给 $\mathcal{A}$。根据 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$ 假设，这与 $\mathcal{A}$ 所期望的分布计算不可区分（因此，如果 $\mathcal{A}$ 不成功，就可以利用它求解 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$）。如果 $\mathcal{A}$ 产生了系数至多为 $\bar{\beta}$ 且满足 $\mathbf{A}\bar{\mathbf{s}}_1 + \bar{\mathbf{s}}_2 = \bar{c}\mathbf{t}$ 的 $\bar{\mathbf{s}}_1, \bar{\mathbf{s}}_2, \bar{c}$，就得到了 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,\bar{\beta}}$ 实例 $\bar{\mathbf{A}}$ 的一个解。$\square$
 
@@ -1461,11 +1469,13 @@ $$
 
 ### 5.2 基本 $\Sigma$ 协议
 
-现在介绍图 5 中给出的基本方案，该方案最初发表于 \[[Lyu09](#ref-lyu09)\]。这个协议的一个不同寻常之处在于，它不具有完美完备性。为使输出的系数保持较小，在 $\Sigma$ 协议的最后一轮执行拒绝采样，以确保分布与秘密无关。本文所有协议中的拒绝采样步骤都相当简单，只需检查所有系数是否处于某个范围内。也可以执行稍复杂的拒绝采样步骤，即根据离散高斯分布进行采样和拒绝，从而得到略小的输出 \[[Lyu12](#ref-lyu12), [DDLL13](#ref-ddll13)\]。后一类算法的主要缺点是拒绝采样步骤更复杂，实现中稍有差错就可能泄露私钥；防御侧信道攻击也可能更为复杂。因此，对于数字签名这样广泛使用的密码原语，实践中可能更倾向于采用简单的算法。
+现在介绍[图 5](#figure-5) 中给出的基本方案，该方案最初发表于 \[[Lyu09](#ref-lyu09)\]。这个协议的一个不同寻常之处在于，它不具有完美完备性。为使输出的系数保持较小，在 $\Sigma$ 协议的最后一轮执行拒绝采样，以确保分布与秘密无关。本文所有协议中的拒绝采样步骤都相当简单，只需检查所有系数是否处于某个范围内。也可以执行稍复杂的拒绝采样步骤，即根据离散高斯分布进行采样和拒绝，从而得到略小的输出 \[[Lyu12](#ref-lyu12), [DDLL13](#ref-ddll13)\]。后一类算法的主要缺点是拒绝采样步骤更复杂，实现中稍有差错就可能泄露私钥；防御侧信道攻击也可能更为复杂。因此，对于数字签名这样广泛使用的密码原语，实践中可能更倾向于采用简单的算法。
 
 拒绝采样步骤的主要影响是，签名算法的运行时间将成为一个随机变量（但与 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 无关），而不再固定。除此之外，熟悉 Schnorr 型证明的读者会发现，这个协议与之有许多相似之处。协议的第一阶段生成掩码变量 $\mathbf{y}_{1}$ 和 $\mathbf{y}_{2}$，第二步是挑战，最后一步将掩码加到挑战与秘密的乘积上。随后执行拒绝采样；如果证明者发送 $\bot$，则中止并需要重新启动协议。将该协议转换为签名方案时，将采用通常的 Fiat-Shamir 变换，其中挑战由消息与证明者第一条消息的哈希值生成。
 
 在交互式方案中，使通信量保持紧凑的一种常用技巧，是发送第一条消息的哈希值，而非消息本身。由于未哈希的第一条消息可以从后续轮次发送的消息中恢复，验证者能够在验证过程中计算这条消息的哈希值。在使用拒绝采样的格密码情形下，这一技巧还有额外优势：它使得能够模拟发生拒绝时的交互记录。不过，在证明签名方案的安全性时，这种哈希处理并非必需，因为验证者（攻击者）看不到中止的签名尝试。因此，接下来将介绍不带哈希的交互式方案，并仅在没有发生中止（即不发送 $\bot$）的情况下证明零知识性。
+
+<a id="figure-5" class="reference-anchor"></a>
 
 私有信息：$\mathbf{s}_1\in [\beta ]^m,\mathbf{s}_2\in [\beta ]^n$
 
@@ -1475,13 +1485,13 @@ $$
 \begin{array}{c c c} \underline {{\text {证明者}}} & & \underline {{\text {验证者}}} \\ \hline \mathbf {y} _ {1} \leftarrow [ \gamma + \bar {\beta} ] ^ {m} \\ \mathbf {y} _ {2} \leftarrow [ \gamma + \bar {\beta} ] ^ {n}, \\ \mathbf {w} := \mathbf {A} \mathbf {y} _ {1} + \mathbf {y} _ {2} \\ & \xrightarrow {\mathbf {w}} & c \leftarrow \mathcal {C} \\ & \xleftarrow {c} & \\ \mathbf {z} _ {1} := c \mathbf {s} _ {1} + \mathbf {y} _ {1} \\ \mathbf {z} _ {2} := c \mathbf {s} _ {2} + \mathbf {y} _ {2} \\ \text {如果} \mathbf {z} _ {1} \notin [ \bar {\beta} ] ^ {m} \text {或} \mathbf {z} _ {2} \notin [ \bar {\beta} ] ^ {n} \\ \text {则} (\mathbf {z} _ {1}, \mathbf {z} _ {2}) := \bot \\ & \xrightarrow {(\mathbf {z} _ {1} , \mathbf {z} _ {2})} & \\ & & \text {接受当且仅当 } \mathbf {z} _ {1} \in [ \bar {\beta} ] ^ {m} \text {且} \mathbf {z} _ {2} \in [ \bar {\beta} ] ^ {n} \\ & & \text {且} \mathbf {A} \mathbf {z} _ {1} + \mathbf {z} _ {2} - c \mathbf {t} = \mathbf {w} \end{array}
 $$
 
-图 5：基本零知识证明系统。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}$、$\mathbf{s}_{2} \in [\beta]^{n}$，并给出关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}$、$\bar{\mathbf{s}}_{2} \in [2\bar{\beta}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由引理 10 定义；$\bar{\beta}$ 的值会影响协议的完备性（即不发送 $\bot$ 的概率），具体如引理 10 所述。
+图 5：基本零知识证明系统。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}$、$\mathbf{s}_{2} \in [\beta]^{n}$，并给出关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}$、$\bar{\mathbf{s}}_{2} \in [2\bar{\beta}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由[引理 10](#lemma-10) 定义；$\bar{\beta}$ 的值会影响协议的完备性（即不发送 $\bot$ 的概率），具体如[引理 10](#lemma-10) 所述。
 
 #### 5.2.1 诚实验证者零知识性
 
-现在证明图 5 中的协议具有诚实验证者零知识性（HVZK）。也就是说，将说明如何在不知道秘密 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 的情况下生成有效的交互记录。证明的关键是下面的引理：对于系数有界的所有 $\mathbf{s}_{1}, \mathbf{s}_{2}$，出现 $\bot$ 的概率相同，而且 $\mathbf{z}_{1}, \mathbf{z}_{2}$ 的分布与 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 无关。
+现在证明[图 5](#figure-5) 中的协议具有诚实验证者零知识性（HVZK）。也就是说，将说明如何在不知道秘密 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 的情况下生成有效的交互记录。证明的关键是下面的引理：对于系数有界的所有 $\mathbf{s}_{1}, \mathbf{s}_{2}$，出现 $\bot$ 的概率相同，而且 $\mathbf{z}_{1}, \mathbf{z}_{2}$ 的分布与 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 无关。
 
-引理 10. 若 $\gamma \in \mathbb{Z}^{+}$ 满足：对于所有多项式 $s \in [\beta], c \in \mathcal{C}$，都有 $cs \in [\gamma]$，[^23] 则对于图 5 协议中的所有 $\mathbf{s}_{i}, c$，有
+<span id="lemma-10" class="reference-anchor">引理 10</span>. 若 $\gamma \in \mathbb{Z}^{+}$ 满足：对于所有多项式 $s \in [\beta], c \in \mathcal{C}$，都有 $cs \in [\gamma]$，[^23] 则对于[图 5](#figure-5) 协议中的所有 $\mathbf{s}_{i}, c$，有
 
 [^23]: 当 $\|c\|_{1}=\eta$ 且 $s\in[\beta]$ 时，可以直接定义 $\gamma=\eta\cdot\beta$。
 
@@ -1527,15 +1537,15 @@ $$
 
 因此，设定 $\bar{\beta} = \gamma d(m + n)$ 后，协议在发送非 $\perp$ 值之前所需的期望重复次数为 $e$。当然，也可以将 $\bar{\beta}$ 设得更小，代价是增加期望重复次数。
 
-现在利用引理 10 说明如何以正确的概率模拟未中止的交互记录，从而证明图 5 中的协议在不发送 $\bot$ 时具有诚实验证者零知识性。
+现在利用[引理 10](#lemma-10) 说明如何以正确的概率模拟未中止的交互记录，从而证明[图 5](#figure-5) 中的协议在不发送 $\bot$ 时具有诚实验证者零知识性。
 
-模拟器随机选择 $\mathbf{z}_{1} \leftarrow [\bar{\beta}]^{m}$、$\mathbf{z}_{2} \leftarrow [\bar{\beta}]^{n}$、$c \leftarrow \mathcal{C}$，令 $\mathbf{w} := \mathbf{Az}_{1} + \mathbf{z}_{2} - c\mathbf{t}$，并输出 $(\mathbf{w}, c, \mathbf{z}_{1}, \mathbf{z}_{2})$。这一分布完美模拟了未中止的交互记录，因为 $c$ 均匀分布，根据引理 10，$\mathbf{z}_{1}, \mathbf{z}_{2}$ 的值（对于任何 $c$）都是均匀随机的，而 $\mathbf{w}$ 由其他变量唯一确定。至此证明了图 5 中的协议在不发送 $\bot$ 时具有 HVZK 性质。
+模拟器随机选择 $\mathbf{z}_{1} \leftarrow [\bar{\beta}]^{m}$、$\mathbf{z}_{2} \leftarrow [\bar{\beta}]^{n}$、$c \leftarrow \mathcal{C}$，令 $\mathbf{w} := \mathbf{Az}_{1} + \mathbf{z}_{2} - c\mathbf{t}$，并输出 $(\mathbf{w}, c, \mathbf{z}_{1}, \mathbf{z}_{2})$。这一分布完美模拟了未中止的交互记录，因为 $c$ 均匀分布，根据[引理 10](#lemma-10)，$\mathbf{z}_{1}, \mathbf{z}_{2}$ 的值（对于任何 $c$）都是均匀随机的，而 $\mathbf{w}$ 由其他变量唯一确定。至此证明了[图 5](#figure-5) 中的协议在不发送 $\bot$ 时具有 HVZK 性质。
 
-继续之前，需指出，诚实证明者发送 $\perp$（因而必须重复协议）的概率与秘密 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 无关（引理 10）。这对于实际应用很重要，因为运行时间对秘密的任何依赖都可能导致侧信道攻击：攻击者会尝试通过观察证明者的运行时间推断秘密的某些信息。因此，图 5 中的协议能够抵御这种特定攻击。
+继续之前，需指出，诚实证明者发送 $\perp$（因而必须重复协议）的概率与秘密 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 无关（[引理 10](#lemma-10)）。这对于实际应用很重要，因为运行时间对秘密的任何依赖都可能导致侧信道攻击：攻击者会尝试通过观察证明者的运行时间推断秘密的某些信息。因此，[图 5](#figure-5) 中的协议能够抵御这种特定攻击。
 
 #### 5.2.2 知识证明
 
-为证明该协议是知识证明（PoK），采用通常的回绕论证（见图 6）：证明者发送 $\mathbf{w}$，随后分别以 $(\mathbf{z}_{1}, \mathbf{z}_{2})$ 和 $(\mathbf{z}_{1}', \mathbf{z}_{2}')$ 成功回应两个挑战 $c, c'$。如果能够提取出满足验证方程的两个交互记录 $(\mathbf{w}, c, \mathbf{z}_{1}, \mathbf{z}_{2})$ 和 $(\mathbf{w}, c', \mathbf{z}_{1}', \mathbf{z}_{2}')$，则有 $\mathbf{A} \mathbf{z}_{1} + \mathbf{z}_{2} - c \mathbf{t} = \mathbf{A} \mathbf{z}_{1}' + \mathbf{z}_{2}' - c' \mathbf{t}$。该式化简为
+为证明该协议是知识证明（PoK），采用通常的回绕论证（见[图 6](#figure-6)）：证明者发送 $\mathbf{w}$，随后分别以 $(\mathbf{z}_{1}, \mathbf{z}_{2})$ 和 $(\mathbf{z}_{1}', \mathbf{z}_{2}')$ 成功回应两个挑战 $c, c'$。如果能够提取出满足验证方程的两个交互记录 $(\mathbf{w}, c, \mathbf{z}_{1}, \mathbf{z}_{2})$ 和 $(\mathbf{w}, c', \mathbf{z}_{1}', \mathbf{z}_{2}')$，则有 $\mathbf{A} \mathbf{z}_{1} + \mathbf{z}_{2} - c \mathbf{t} = \mathbf{A} \mathbf{z}_{1}' + \mathbf{z}_{2}' - c' \mathbf{t}$。该式化简为
 
 <a id="eq-81"></a>
 
@@ -1547,7 +1557,9 @@ $$
 
 #### 5.2.3 综合上述性质
 
-诚实验证者零知识性意味着，攻击者无法从观察未中止的交互记录中获得任何信息。知识证明性质意味着，能够冒充证明者的攻击者可以产生式 [(74)](#eq-74) 所示的解，根据引理 9，这意味着他能够求解 Ring-LWE 或 Ring-SIS 问题。这两项性质共同表明（假设 Ring-SIS 和 Ring-LWE 是困难的），即使攻击者观察了之前未中止的有效交互，也不能在图 5 的协议中冒充证明者。这使得能够利用 Fiat-Shamir 变换，基于 Ring-SIS 和 Ring-LWE 的困难性，构造在随机预言机模型下安全的数字签名方案。
+诚实验证者零知识性意味着，攻击者无法从观察未中止的交互记录中获得任何信息。知识证明性质意味着，能够冒充证明者的攻击者可以产生式 [(74)](#eq-74) 所示的解，根据[引理 9](#lemma-9)，这意味着他能够求解 Ring-LWE 或 Ring-SIS 问题。这两项性质共同表明（假设 Ring-SIS 和 Ring-LWE 是困难的），即使攻击者观察了之前未中止的有效交互，也不能在[图 5](#figure-5) 的协议中冒充证明者。这使得能够利用 Fiat-Shamir 变换，基于 Ring-SIS 和 Ring-LWE 的困难性，构造在随机预言机模型下安全的数字签名方案。
+
+<a id="figure-6" class="reference-anchor"></a>
 
 公开信息：$\mathbf{A} \in \mathcal{R}_{q,f}^{n \times m}, \mathbf{t} \in \mathcal{R}_{q,f}^{n}$
 
@@ -1598,11 +1610,11 @@ $$
 
 #### 5.2.4 参数设置
 
-本节开头的知识证明论证（见式 [(81)](#eq-81)）表明，可以提取系数属于 $[2\bar{\beta}]$ 的 $\bar{\mathbf{s}}_1, \bar{\mathbf{s}}_2$，以及满足 $\| \bar{c} \|_1 \leq 2\eta$ 的 $\bar{c}$，使它们满足式 [(74)](#eq-74)。随后，引理 9 表明，如果 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$ 是困难的，那么上述提取就意味着求解 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,2\bar{\beta}}$。因此，最优参数设置应使这两个问题同样困难，即它们在图 2 中处于相同的纵向位置。参数 $\bar{\beta}$ 的选择由引理 10 决定。如式 [(80)](#eq-80) 所指出，$\bar{\beta}$ 应设为 $\gamma d(m+n)$ 左右，其中 $\gamma$ 满足对所有 $s \in [\beta]$ 都有 $cs \in [\gamma]$。因此，如果选择的 $c$ 满足 $\|c\|_1 \leq \eta$，则可将 $\gamma$ 设为 $\eta \cdot \beta$。所以，$\bar{\beta}$ 大约是 $\beta$ 的 $\eta d(m+n)$ 倍。
+本节开头的知识证明论证（见式 [(81)](#eq-81)）表明，可以提取系数属于 $[2\bar{\beta}]$ 的 $\bar{\mathbf{s}}_1, \bar{\mathbf{s}}_2$，以及满足 $\| \bar{c} \|_1 \leq 2\eta$ 的 $\bar{c}$，使它们满足式 [(74)](#eq-74)。随后，[引理 9](#lemma-9) 表明，如果 $\mathcal{R}_{q,f}$ - $\mathsf{LWE}_{n,m,\beta}$ 是困难的，那么上述提取就意味着求解 $\mathcal{R}_{q,f}$ - $\mathsf{SIS}_{n,m+1,2\bar{\beta}}$。因此，最优参数设置应使这两个问题同样困难，即它们在[图 2](#figure-2) 中处于相同的纵向位置。参数 $\bar{\beta}$ 的选择由[引理 10](#lemma-10) 决定。如式 [(80)](#eq-80) 所指出，$\bar{\beta}$ 应设为 $\gamma d(m+n)$ 左右，其中 $\gamma$ 满足对所有 $s \in [\beta]$ 都有 $cs \in [\gamma]$。因此，如果选择的 $c$ 满足 $\|c\|_1 \leq \eta$，则可将 $\gamma$ 设为 $\eta \cdot \beta$。所以，$\bar{\beta}$ 大约是 $\beta$ 的 $\eta d(m+n)$ 倍。
 
 ### 5.3 与离散对数方案的类比：Schnorr、Okamoto 和 Katz-Wang
 
-本节将进一步探讨图 5 中基于格的协议与基于离散对数的协议之间的类比。[^24] 如前所述，该格协议及其经 Fiat-Shamir 变换得到的签名方案，与 Schnorr 身份识别和签名方案 \[[Sch89](#ref-sch89)\] 十分相似。下面将看到，仅通过改变参数 $\beta$（以及由它导出的 $\bar{\beta}$），就能得到具有略有不同的安全特性的方案，它们对应于文献中其他基于离散对数的方案。最终会发现，可以不受约束地自由设置 $\beta$ 的 Schnorr 实例化是最高效的变体；但考察其他变体有助于直观理解基于格的协议如何构造和实例化。事实上，理解参数如何影响格方案的性质，是设计格密码协议的重要组成部分。
+本节将进一步探讨[图 5](#figure-5) 中基于格的协议与基于离散对数的协议之间的类比。[^24] 如前所述，该格协议及其经 Fiat-Shamir 变换得到的签名方案，与 Schnorr 身份识别和签名方案 \[[Sch89](#ref-sch89)\] 十分相似。下面将看到，仅通过改变参数 $\beta$（以及由它导出的 $\bar{\beta}$），就能得到具有略有不同的安全特性的方案，它们对应于文献中其他基于离散对数的方案。最终会发现，可以不受约束地自由设置 $\beta$ 的 Schnorr 实例化是最高效的变体；但考察其他变体有助于直观理解基于格的协议如何构造和实例化。事实上，理解参数如何影响格方案的性质，是设计格密码协议的重要组成部分。
 
 [^24]: 后续内容不依赖本节；如果只想了解基于格的签名方案的最终构造，可以跳过本节。
 
@@ -1610,7 +1622,7 @@ Schnorr。Schnorr 协议中的公钥由随机的 $g$ 和 $h = g^{x}$ 组成，�
 
 为说明（在诚实验证者情形下）成功冒充意味着攻破离散对数，收到离散对数挑战 $(g, h)$ 后，将其设为公钥。即使不知道满足 $g^{x} = h$ 的 $x$，也可以先随机选择 $z$、$c$，再令 $w = g^{z}/h^{c}$，从而模拟诚实生成的交互记录 $(w, c, z)$。此后可以证明，如果攻击者能够成功冒充，那么通常的回绕论证会得到两个交互记录 $(w, c, z)$ 和 $(w, c', z')$，满足 $g^{z} = h^{c} \cdot w$ 和 $g^{z'} = h^{c'} \cdot w$。由此得到 $\bar{z} = z - z'$ 和 $\bar{c} = c - c'$，满足 $g^{\bar{z}} = h^{\bar{c}}$。再由后一个等式，即可获得有效的离散对数解 $\bar{z}/\bar{c}$。
 
-图 5 中基于格的对应方案将公钥设为 $(\mathbf{A},\mathbf{t}=\mathbf{A}\mathbf{s}_{1}+\mathbf{s}_{2})$，私钥则为 $\mathbf{s}_{1},\mathbf{s}_{2}$。在格情形中，提取满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{i},\bar{c}$，然后利用引理 9 说明这意味着得到了实例 $[\mathbf{A}\mid \mathbf{t}]$ 的 Ring-SIS 解。一个小区别是，Schnorr 签名中的公钥 $(g,g^{x})$ 是随机的，而在格情形中，引理 9 需要借助 Ring-LWE 假设论证公钥看起来是随机的。
+[图 5](#figure-5) 中基于格的对应方案将公钥设为 $(\mathbf{A},\mathbf{t}=\mathbf{A}\mathbf{s}_{1}+\mathbf{s}_{2})$，私钥则为 $\mathbf{s}_{1},\mathbf{s}_{2}$。在格情形中，提取满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{i},\bar{c}$，然后利用[引理 9](#lemma-9) 说明这意味着得到了实例 $[\mathbf{A}\mid \mathbf{t}]$ 的 Ring-SIS 解。一个小区别是，Schnorr 签名中的公钥 $(g,g^{x})$ 是随机的，而在格情形中，[引理 9](#lemma-9) 需要借助 Ring-LWE 假设论证公钥看起来是随机的。
 
 应当注意，从代数角度看，基于格的方案与基于离散对数的方案非常相似。两种情形中都存在某个同态单向函数族 $\mathcal{F}$，公钥由 $f, f(x)$ 组成，其中 $f$ 是从该函数族中随机选择的成员，$x$ 是随机选择的私钥。第一步选择随机掩码 $y$，并发送 $w = f(y)$。收到挑战 $c$ 后，证明者以 $z = y + xc$ 回应。通过改变 $f$ 的定义域与值域大小之间的关系，可以使离散对数协议获得不同性质；正如接下来所示，格上的对应方案也按同样的思路得到。
 
@@ -1650,7 +1662,7 @@ $$
 
 [^26]: 这是因为 $y_i$ 均匀分布，所以 $z_i$ 也均匀分布，而 $w$ 是 $z_i$ 和 $c$ 的确定性函数。
 
-在格情形中，要从类似 Schnorr 的方案转为类似 Okamoto 的方案，只需设置私钥 $\mathbf{s}_{1}, \mathbf{s}_{2}$，使得公钥 $(\mathbf{A}, \mathbf{t} = \mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2})$ 以高概率不能唯一确定私钥。这只需选择更大的 $\beta$。具体来说，如果选择 $\beta$ 使 $(2\beta + 1)^{n+m} > q^{n} \cdot 2^{128/d}$，那么任何（能力不受限制的）算法恢复准确的 $(\mathbf{s}_{1}, \mathbf{s}_{2})$ 的概率都只有 $2^{-128}$。[^27] 而交互记录不会泄露有关 $\mathbf{s}_{i}$ 的任何信息这一事实，已由引理 10 证明。
+在格情形中，要从类似 Schnorr 的方案转为类似 Okamoto 的方案，只需设置私钥 $\mathbf{s}_{1}, \mathbf{s}_{2}$，使得公钥 $(\mathbf{A}, \mathbf{t} = \mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2})$ 以高概率不能唯一确定私钥。这只需选择更大的 $\beta$。具体来说，如果选择 $\beta$ 使 $(2\beta + 1)^{n+m} > q^{n} \cdot 2^{128/d}$，那么任何（能力不受限制的）算法恢复准确的 $(\mathbf{s}_{1}, \mathbf{s}_{2})$ 的概率都只有 $2^{-128}$。[^27] 而交互记录不会泄露有关 $\mathbf{s}_{i}$ 的任何信息这一事实，已由[引理 10](#lemma-10) 证明。
 
 [^27]: 为说明这一点，注意到，在看到某个值 $\mathbf{t}$ 后，猜测其原像 $(\mathbf{s}_1,\mathbf{s}_2)$ 的最优策略，是确定性地选择概率最大的原像。由于 $\mathbf{t}$ 的取值空间大小为 $q^{nd}$，最优猜测者至多会输出 $q^{nd}$ 种可能的原像。而原像总共有 $(2\beta+1)^{(n+m)d}$ 个，每个被选中的概率都相同，因此，最优猜测者能够输出的原像至多占全部原像的 $q^{nd}/(2\beta+1)^{(n+m)d}$。
 
@@ -1672,7 +1684,7 @@ $$
 
 其中 $\mathcal{C}$ 是选取 $c$ 的挑战空间。因此，观察攻击者能否成功冒充，就直接给出了 DDH 问题的解。
 
-对于图 5 协议中的格方案，只需将参数设置为使 $\bar{\beta}$ 足够小，就能得到 Katz-Wang 方案的对应版本：当公钥为均匀随机的 $(\mathbf{A}, \mathbf{t})$ 时，在信息论意义上不存在有效回应 $\mathbf{z}_{1}, \mathbf{z}_{2}$。注意，此时观察攻击者能否成功，就可以区分均匀随机的 $(\mathbf{A}, \mathbf{t})$ 与 $(\mathbf{A}, \mathbf{t} = \mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2})$，而这恰好是 Ring-LWE 问题。为了发送能让验证者接受的 $\mathbf{z}_{1}, \mathbf{z}_{2}$，需要它们的系数属于 $[\bar{\beta}]$，并满足 $\mathbf{A}\mathbf{z}_{1} + \mathbf{z}_{2} = \mathbf{t}c + \mathbf{w}$。接下来希望证明，对于所有 $\mathbf{w}$，如果公钥随机选择，则只有一个可能的挑战 $c$ 会存在这样的有效 $\mathbf{z}_{i}$。
+对于[图 5](#figure-5) 协议中的格方案，只需将参数设置为使 $\bar{\beta}$ 足够小，就能得到 Katz-Wang 方案的对应版本：当公钥为均匀随机的 $(\mathbf{A}, \mathbf{t})$ 时，在信息论意义上不存在有效回应 $\mathbf{z}_{1}, \mathbf{z}_{2}$。注意，此时观察攻击者能否成功，就可以区分均匀随机的 $(\mathbf{A}, \mathbf{t})$ 与 $(\mathbf{A}, \mathbf{t} = \mathbf{A}\mathbf{s}_{1} + \mathbf{s}_{2})$，而这恰好是 Ring-LWE 问题。为了发送能让验证者接受的 $\mathbf{z}_{1}, \mathbf{z}_{2}$，需要它们的系数属于 $[\bar{\beta}]$，并满足 $\mathbf{A}\mathbf{z}_{1} + \mathbf{z}_{2} = \mathbf{t}c + \mathbf{w}$。接下来希望证明，对于所有 $\mathbf{w}$，如果公钥随机选择，则只有一个可能的挑战 $c$ 会存在这样的有效 $\mathbf{z}_{i}$。
 
 用反证法，假设存在两个 $c, c' \in \mathcal{C}$，且存在 $\mathbf{z}_1, \mathbf{z}_2, \mathbf{z}_1', \mathbf{z}_2'$ 使得
 
@@ -1688,20 +1700,24 @@ $$
 \mathbf {A} \bar {\mathbf {z}} _ {1} + \bar {\mathbf {z}} _ {2} = \mathbf {t} \bar {c},\tag{84}
 $$
 
-其中 $\bar{\mathbf{z}}_{i}=\mathbf{z}_{i}-\mathbf{z}_{i}^{\prime}$，$\bar{c}=c-c^{\prime}$。现在可以使用与引理 2 类似的论证得出：对于随机的 $(\mathbf{A},\mathbf{t})$，以高概率不存在系数属于 $[2\bar{\beta}]$ 的这样的 $\bar{\mathbf{z}}_{i}$。[^30]
+其中 $\bar{\mathbf{z}}_{i}=\mathbf{z}_{i}-\mathbf{z}_{i}^{\prime}$，$\bar{c}=c-c^{\prime}$。现在可以使用与[引理 2](#lemma-2) 类似的论证得出：对于随机的 $(\mathbf{A},\mathbf{t})$，以高概率不存在系数属于 $[2\bar{\beta}]$ 的这样的 $\bar{\mathbf{z}}_{i}$。[^30]
 
 [^30]: 要将该引理在 $\mathbb{Z}_q$ 上的论证类比推广到 $\mathcal{R}_{q,f}$ 上，需要确保多项式 $z\in[2\bar{\beta}]$ 可逆。通过适当设置环 $\mathcal{R}_{q,f}$ 的参数，可以保证这一点（参见 \[[LS18](#ref-ls18), Corollary 1.2\]）。
 
+<a id="figure-7" class="reference-anchor"></a>
+
 ![](output/2024-1287/hybrid_auto/images/60e3f69b6323f161ea2d541f25b3e580329143c6562c1d2321b62a000df9281f.jpg)  
-图 7：图 5 中格协议的 Schnorr、Okamoto 和 Katz-Wang 对应版本的最优参数选择示意。Okamoto 和 Katz-Wang 变体施加的约束会使 Ring-SIS / Ring-LWE 实例变得不那么困难，因此需要增大参数（如 $n$ 和 $m$)来提升方案的安全性。
+图 7：[图 5](#figure-5) 中格协议的 Schnorr、Okamoto 和 Katz-Wang 对应版本的最优参数选择示意。Okamoto 和 Katz-Wang 变体施加的约束会使 Ring-SIS / Ring-LWE 实例变得不那么困难，因此需要增大参数（如 $n$ 和 $m$)来提升方案的安全性。
 
-为了设置参数 $\bar{\beta}$，使式 [(84)](#eq-84) 以高概率无解，需要 $\bar{\beta}$ 比 $q^{n / (n + m)}$ 小一些（如引理 2 所述），因而 $\beta$ 必须更小；两者之间的关系仍由引理 10 决定。与 Katz-Wang 方案一样，这会得到比 Schnorr 对应版本效率更低的实例化。
+为了设置参数 $\bar{\beta}$，使式 [(84)](#eq-84) 以高概率无解，需要 $\bar{\beta}$ 比 $q^{n / (n + m)}$ 小一些（如[引理 2](#lemma-2) 所述），因而 $\beta$ 必须更小；两者之间的关系仍由[引理 10](#lemma-10) 决定。与 Katz-Wang 方案一样，这会得到比 Schnorr 对应版本效率更低的实例化。
 
-效率与安全性比较。基于格的协议的 Okamoto 和 Katz-Wang 对应版本对参数 $\beta$ 和 $\bar{\beta}$ 施加了一些约束，使得到的实例化不如自由选择这些值时高效（同时满足引理 10 确立的二者关系）。在图 2 中，概述了 LWE 和 SIS 问题的安全性如何随参数 $\beta$ 变化。$\mathsf{LWE}_{n,m,q,\beta}$ 和 $\mathsf{SIS}_{n,m,q,\beta}$ 问题（以及它们的多项式版本）困难性相同的交点大约位于 $q^{n/(n+m)}$。图 5 签名方案的最优参数设置，应使 $\beta$ 和 $\bar{\beta}$ 位于该交点的两侧。然而，在类 Okamoto 方案中，需要设置 $\beta > q^{n/(n+m)}$，以使公钥不能唯一确定私钥，这会使 $\beta$ 和 $\bar{\beta}$ 位于同一侧。在类 Katz-Wang 方案中，需要 $\bar{\beta} < q^{n/(n+m)}$ 才能使用信息论论证，这同样会使 $\beta$ 和 $\bar{\beta}$ 位于同一侧。图 7 对此作了直观展示，有助于理解为什么不受这些约束的类 Schnorr 变体具有最高效的参数。
+效率与安全性比较。基于格的协议的 Okamoto 和 Katz-Wang 对应版本对参数 $\beta$ 和 $\bar{\beta}$ 施加了一些约束，使得到的实例化不如自由选择这些值时高效（同时满足[引理 10](#lemma-10) 确立的二者关系）。在[图 2](#figure-2) 中，概述了 LWE 和 SIS 问题的安全性如何随参数 $\beta$ 变化。$\mathsf{LWE}_{n,m,q,\beta}$ 和 $\mathsf{SIS}_{n,m,q,\beta}$ 问题（以及它们的多项式版本）困难性相同的交点大约位于 $q^{n/(n+m)}$。[图 5](#figure-5) 签名方案的最优参数设置，应使 $\beta$ 和 $\bar{\beta}$ 位于该交点的两侧。然而，在类 Okamoto 方案中，需要设置 $\beta > q^{n/(n+m)}$，以使公钥不能唯一确定私钥，这会使 $\beta$ 和 $\bar{\beta}$ 位于同一侧。在类 Katz-Wang 方案中，需要 $\bar{\beta} < q^{n/(n+m)}$ 才能使用信息论论证，这同样会使 $\beta$ 和 $\bar{\beta}$ 位于同一侧。[图 7](#figure-7) 对此作了直观展示，有助于理解为什么不受这些约束的类 Schnorr 变体具有最高效的参数。
 
 ### 5.4 缩小证明大小
 
-本节将说明如何通过免去发送 $\mathbf{z}_{2}$ 的需要，减少图 5 协议中证明者的通信量。首先注意，在图 5 的交互式协议中，可以直接从证明输出中去掉 $\mathbf{z}_{2}$，因为验证者可以根据 $\mathbf{z}_{1}, c, \mathbf{t}$ 和 $\mathbf{w}$，按 $\mathbf{z}_{2} = \mathbf{w} - \mathbf{A}\mathbf{z}_{1} + c\mathbf{t}$ 重新计算 $\mathbf{z}_{2}$。然而，这与高效使用该交互式方案，或者最终通过 Fiat-Shamir 变换将它转换为数字签名的方式不兼容（见[第 5.6 节](#56)）。在图 5 的协议中，第一步实际上无需发送向量 $\mathbf{w}$，而可以发送短得多的哈希值 $\rho = \mathcal{H}(\mathbf{w})$，其中 $\mathcal{H}$ 是某个抗碰撞函数。相应地，验证者执行检查 $\mathcal{H}(\mathbf{A}\mathbf{z}_{1} + \mathbf{z}_{2} - c\mathbf{t}) = \rho$。但采用这一优化后，就无法像之前那样恢复 $\mathbf{z}_{2}$，因而也无法完成验证。在此确实希望采用这一优化，因为在签名方案中不必发送 $\mathbf{w}$ 基本上能将签名大小减半。因此，乍看之下，证明者似乎必须发送 $\mathbf{w}$ 或 $\mathbf{z}_{2}$ 中的一个。
+本节将说明如何通过免去发送 $\mathbf{z}_{2}$ 的需要，减少[图 5](#figure-5) 协议中证明者的通信量。首先注意，在[图 5](#figure-5) 的交互式协议中，可以直接从证明输出中去掉 $\mathbf{z}_{2}$，因为验证者可以根据 $\mathbf{z}_{1}, c, \mathbf{t}$ 和 $\mathbf{w}$，按 $\mathbf{z}_{2} = \mathbf{w} - \mathbf{A}\mathbf{z}_{1} + c\mathbf{t}$ 重新计算 $\mathbf{z}_{2}$。然而，这与高效使用该交互式方案，或者最终通过 Fiat-Shamir 变换将它转换为数字签名的方式不兼容（见[第 5.6 节](#56)）。在[图 5](#figure-5) 的协议中，第一步实际上无需发送向量 $\mathbf{w}$，而可以发送短得多的哈希值 $\rho = \mathcal{H}(\mathbf{w})$，其中 $\mathcal{H}$ 是某个抗碰撞函数。相应地，验证者执行检查 $\mathcal{H}(\mathbf{A}\mathbf{z}_{1} + \mathbf{z}_{2} - c\mathbf{t}) = \rho$。但采用这一优化后，就无法像之前那样恢复 $\mathbf{z}_{2}$，因而也无法完成验证。在此确实希望采用这一优化，因为在签名方案中不必发送 $\mathbf{w}$ 基本上能将签名大小减半。因此，乍看之下，证明者似乎必须发送 $\mathbf{w}$ 或 $\mathbf{z}_{2}$ 中的一个。
+
+<a id="figure-8" class="reference-anchor"></a>
 
 私有信息：$\mathbf{s}_1 \in [\beta]^m, \mathbf{s}_2 \in [\beta]^n$
 
@@ -1757,13 +1773,13 @@ c\leftarrow\mathcal{C}
 \end{array}
 $$
 
-图 8：输出更小的基本零知识证明系统。集合 $\mathcal{S} \subseteq \mathbb{Z}_{q}$ 的大小为 $2^{\kappa}$，函数 $\mathrm{HIGH}_\mathcal{S}, \mathrm{LOW}_\mathcal{S}$ 以及常数 $\delta_\mathcal{S}$ 按[第 5.4 节](#54)正文中的方式定义。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}, \mathbf{s}_{2} \in [\beta]^{n}$，并生成关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}, \bar{\mathbf{s}}_{2} \in [q/2^{\kappa}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由引理 10 定义；$\bar{\beta}$ 的值影响协议的完备性（即不发送 $\bot$ 的概率），具体如式 [(89)](#eq-89) 所述。
+图 8：输出更小的基本零知识证明系统。集合 $\mathcal{S} \subseteq \mathbb{Z}_{q}$ 的大小为 $2^{\kappa}$，函数 $\mathrm{HIGH}_\mathcal{S}, \mathrm{LOW}_\mathcal{S}$ 以及常数 $\delta_\mathcal{S}$ 按[第 5.4 节](#54)正文中的方式定义。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}, \mathbf{s}_{2} \in [\beta]^{n}$，并生成关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}, \bar{\mathbf{s}}_{2} \in [q/2^{\kappa}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由[引理 10](#lemma-10) 定义；$\bar{\beta}$ 的值影响协议的完备性（即不发送 $\bot$ 的概率），具体如式 [(89)](#eq-89) 所述。
 
-避免发送 $\mathbf{w}$ 和 $\mathbf{z}_2$ 的关键，是构造 $\mathbf{w}$，使验证过程不需要 $\mathbf{z}_2$。由于图 5 验证过程中的 $\mathbf{z}_2$ 以较高概率不会影响 $\mathbf{w}$ 的高位，可以发送仅由 $\mathbf{A}\mathbf{y}_1 + \mathbf{y}_2$ 的高位组成的 $\mathbf{w}$。此外，由于 $\mathbf{y}_2$ 也以较高概率不会影响高位，可以直接将 $\mathbf{w}$ 定义为 $\mathbf{A}\mathbf{y}_1$ 的高位，然后让验证者检查 $\mathbf{A}\mathbf{z}_1 - c\mathbf{t}$ 的高位是否为 $\mathbf{w}$。如果这一做法成立，那么等式 $\mathcal{H}(\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}_1 - c\mathbf{t})) = \mathcal{H}(\mathbf{w})$ 也成立，于是证明者可以发送 $\rho = \mathcal{H}(\mathbf{w})$ 来代替 $\mathbf{w}$，从而既不必发送 $\mathbf{z}_2$，也不必发送 $\mathbf{w}$！
+避免发送 $\mathbf{w}$ 和 $\mathbf{z}_2$ 的关键，是构造 $\mathbf{w}$，使验证过程不需要 $\mathbf{z}_2$。由于[图 5](#figure-5) 验证过程中的 $\mathbf{z}_2$ 以较高概率不会影响 $\mathbf{w}$ 的高位，可以发送仅由 $\mathbf{A}\mathbf{y}_1 + \mathbf{y}_2$ 的高位组成的 $\mathbf{w}$。此外，由于 $\mathbf{y}_2$ 也以较高概率不会影响高位，可以直接将 $\mathbf{w}$ 定义为 $\mathbf{A}\mathbf{y}_1$ 的高位，然后让验证者检查 $\mathbf{A}\mathbf{z}_1 - c\mathbf{t}$ 的高位是否为 $\mathbf{w}$。如果这一做法成立，那么等式 $\mathcal{H}(\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}_1 - c\mathbf{t})) = \mathcal{H}(\mathbf{w})$ 也成立，于是证明者可以发送 $\rho = \mathcal{H}(\mathbf{w})$ 来代替 $\mathbf{w}$，从而既不必发送 $\mathbf{z}_2$，也不必发送 $\mathbf{w}$！
 
 不发送 $\mathbf{z}_{2}$ 后，乍看起来协议似乎不再依赖秘密 $\mathbf{s}_{2}$；甚至可能希望，由于不再需要检查向量 $\mathbf{z}_{2}$，协议中止的概率也会降低。然而，这并不完全正确：证明者仍需使用 $\mathbf{s}_{2}$，才能使协议保持零知识性。
 
-不发送 $\mathbf{z}_{2}$ 的思想及其实现，与[第 2.5.1 节](#251)中通过丢弃比特缩短密文的思路有些相似。在签名协议中不发送 $\mathbf{z}_{2}$ 的想法见于 \[[GLP12](#ref-glp12), [BG14](#ref-bg14)\]，而在图 8 中给出的协议来自 \[[BG14](#ref-bg14)\]。与[第 2.5.1 节](#251)一样，假设选取大小为 $2^{\kappa}$ 的集合 $\mathcal{S} \subset \mathbb{Z}_{q}$，使该集合中任意相邻两个元素之间的距离为 $\approx q/2^{\kappa}$（见式 [(18)](#eq-18)）。再回顾该节中的记号：可以将任意 $w \in \mathbb{Z}_{q}$ 唯一表示为 $w = \operatorname{HIGH}_\mathcal{S}(w) + \operatorname{LOW}_\mathcal{S}(w)$，其中 $\operatorname{HIGH}_\mathcal{S}(w) \in \mathcal{S}$，且 $\operatorname{LOW}_\mathcal{S}(w) = w - \operatorname{HIGH}_\mathcal{S}(w) \in [q/2^{\kappa+1}]$。对每个多项式的每个整数系数应用这一分解，即可将该记号自然扩展到 $\mathcal{R}_{q,f}$ 上的向量。
+不发送 $\mathbf{z}_{2}$ 的思想及其实现，与[第 2.5.1 节](#251)中通过丢弃比特缩短密文的思路有些相似。在签名协议中不发送 $\mathbf{z}_{2}$ 的想法见于 \[[GLP12](#ref-glp12), [BG14](#ref-bg14)\]，而在[图 8](#figure-8) 中给出的协议来自 \[[BG14](#ref-bg14)\]。与[第 2.5.1 节](#251)一样，假设选取大小为 $2^{\kappa}$ 的集合 $\mathcal{S} \subset \mathbb{Z}_{q}$，使该集合中任意相邻两个元素之间的距离为 $\approx q/2^{\kappa}$（见式 [(18)](#eq-18)）。再回顾该节中的记号：可以将任意 $w \in \mathbb{Z}_{q}$ 唯一表示为 $w = \operatorname{HIGH}_\mathcal{S}(w) + \operatorname{LOW}_\mathcal{S}(w)$，其中 $\operatorname{HIGH}_\mathcal{S}(w) \in \mathcal{S}$，且 $\operatorname{LOW}_\mathcal{S}(w) = w - \operatorname{HIGH}_\mathcal{S}(w) \in [q/2^{\kappa+1}]$。对每个多项式的每个整数系数应用这一分解，即可将该记号自然扩展到 $\mathcal{R}_{q,f}$ 上的向量。
 
 另外，将 $\delta_\mathcal{S}$ 定义为使全部 $2^\kappa$ 个元素 $s_i \in \mathcal{S}$ 对应的集合 $s_i + [\delta_\mathcal{S}]$ 两两不相交的最大整数。如果在表示 $\mathbb{Z}_{q}$ 的圆上选取彼此等距的 $\mathcal{S}$ 中各点（由于 $q$ 可能无法被 $2^\kappa$ 整除，各距离最多相差 $1$），则 $\delta_\mathcal{S}$ 大约为 $q/2^{\kappa+1}$，它也近似等于所有 $w \in \mathbb{Z}_{q}$ 对应的 $\operatorname{LOW}_\mathcal{S}(w)$ 的最大值（同样至多相差 $1$）。本节余下部分均假设 $\mathcal{S}$ 按此方式选取。一个简单而重要的观察是，对于所有正的 $\gamma < \delta_\mathcal{S}$ 和 $s \in [\gamma]$，
 
@@ -1773,7 +1789,7 @@ $$
 \mathrm{LOW} _ \mathcal{S} (w) \in [ \delta_ \mathcal{S} - \gamma ] \Longrightarrow \mathrm{HIGH} _ \mathcal{S} (w) = \mathrm{HIGH} _ \mathcal{S} (w + s)\tag{85}
 $$
 
-采用上述记号，考虑图 8 的协议。接下来将证明它是关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1}\in[2\bar{\beta}]^{m},\bar{\mathbf{s}}_{2}\in[q/2^{\kappa}]^{n},\bar{c}\in\bar{\mathcal{C}}$ 的知识证明。
+采用上述记号，考虑[图 8](#figure-8) 的协议。接下来将证明它是关于满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1}\in[2\bar{\beta}]^{m},\bar{\mathbf{s}}_{2}\in[q/2^{\kappa}]^{n},\bar{c}\in\bar{\mathcal{C}}$ 的知识证明。
 
 #### 5.4.1 正确性
 
@@ -1789,7 +1805,7 @@ $$
 
 #### 5.4.2 零知识性
 
-与之前一样，在此只说明如何模拟不发送 $\bot$ 的交互记录。由引理 10 可知，在条件 $\mathbf{z} \in [\bar{\beta}]^{m}$ 下，$\mathbf{z}$ 均匀随机分布。因此，模拟器从 $[\bar{\beta}]^{m}$ 中均匀随机选择 $\mathbf{z}$，并选择 $c \in \mathcal{C}$。随后检查是否有 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t}) \in [\delta_\mathcal{S}-\gamma]^{n}$。如果不满足，就重新采样 $\mathbf{z}$ 和 $c$ 并再次尝试。一旦成功，便令 $\mathbf{w} := \mathsf{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$，并输出视图 $(\mathbf{w}, c, \mathbf{z})$。由于第一次检查通过后 $\mathbf{z}$ 具有正确的分布，且真实证明与模拟中的第二次检查完全相同，因此该模拟完美地模拟了未中止的交互记录。
+与之前一样，在此只说明如何模拟不发送 $\bot$ 的交互记录。由[引理 10](#lemma-10) 可知，在条件 $\mathbf{z} \in [\bar{\beta}]^{m}$ 下，$\mathbf{z}$ 均匀随机分布。因此，模拟器从 $[\bar{\beta}]^{m}$ 中均匀随机选择 $\mathbf{z}$，并选择 $c \in \mathcal{C}$。随后检查是否有 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t}) \in [\delta_\mathcal{S}-\gamma]^{n}$。如果不满足，就重新采样 $\mathbf{z}$ 和 $c$ 并再次尝试。一旦成功，便令 $\mathbf{w} := \mathsf{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$，并输出视图 $(\mathbf{w}, c, \mathbf{z})$。由于第一次检查通过后 $\mathbf{z}$ 具有正确的分布，且真实证明与模拟中的第二次检查完全相同，因此该模拟完美地模拟了未中止的交互记录。
 
 上述模拟中至关重要的一点，是模拟器能够完美模拟真实证明者所做的以下检查：
 
@@ -1803,7 +1819,7 @@ $$
 
 #### 5.4.3 计算 $\perp$ 的概率
 
-与引理 10 中的计算类似，可知 $\mathrm{Pr}_{\mathbf{y}}\left[\mathbf{z}\in [\bar{\beta}]^{m}\right] = \left(\frac{2\bar{\beta} + 1}{2(\bar{\beta} + \gamma) + 1}\right)^{dm}\approx e^{-\gamma dm / \bar{\beta}}$（见式 [(80)](#eq-80)）。为计算 $\mathrm{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y} - c\mathbf{s}_2)\in [\delta_\mathcal{S} - \gamma ]^n$ 的概率，在此作出启发式假设：$\mathbf{A}\mathbf{y} - c\mathbf{s}_2$ 在 $\mathcal{R}_{q,f}^n$ 上均匀分布，因而 $\mathrm{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y} - c\mathbf{s}_2)$ 在 $[\delta_\mathcal{S}]^n$ 上均匀分布。因此，$[\delta_\mathcal{S}]^n$ 中随机元素落在 $[\delta_\mathcal{S} - \gamma ]^n$ 内的概率为
+与[引理 10](#lemma-10) 中的计算类似，可知 $\mathrm{Pr}_{\mathbf{y}}\left[\mathbf{z}\in [\bar{\beta}]^{m}\right] = \left(\frac{2\bar{\beta} + 1}{2(\bar{\beta} + \gamma) + 1}\right)^{dm}\approx e^{-\gamma dm / \bar{\beta}}$（见式 [(80)](#eq-80)）。为计算 $\mathrm{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y} - c\mathbf{s}_2)\in [\delta_\mathcal{S} - \gamma ]^n$ 的概率，在此作出启发式假设：$\mathbf{A}\mathbf{y} - c\mathbf{s}_2$ 在 $\mathcal{R}_{q,f}^n$ 上均匀分布，因而 $\mathrm{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y} - c\mathbf{s}_2)$ 在 $[\delta_\mathcal{S}]^n$ 上均匀分布。因此，$[\delta_\mathcal{S}]^n$ 中随机元素落在 $[\delta_\mathcal{S} - \gamma ]^n$ 内的概率为
 
 <a id="eq-88"></a>
 
@@ -1821,7 +1837,7 @@ $$
 
 注意，更大的 $\bar{\beta}$ 和更大的 $\delta_\mathcal{S}$ 会提高协议正确执行的概率。但如下文所示，这些值越大，提取出的满足式 [(74)](#eq-74) 的 $\bar{\mathbf{s}}_{1}, \bar{\mathbf{s}}_{2}$ 的系数也越大。
 
-需注意，虽然计算 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y}-c\mathbf{s}_{2})\in[\delta_\mathcal{S}-\gamma]^{n}$ 的概率时采用了启发式假设，但论证输出 $\bot$ 的概率与私钥无关时，并不需要任何启发式假设（这一独立性是防止侧信道攻击所必需的）。这是因为 $\mathbf{z}$ 的分布与私钥无关（引理 10），而 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y}-c\mathbf{s}_{2})=\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$，所以该量同样与私钥无关。
+需注意，虽然计算 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y}-c\mathbf{s}_{2})\in[\delta_\mathcal{S}-\gamma]^{n}$ 的概率时采用了启发式假设，但论证输出 $\bot$ 的概率与私钥无关时，并不需要任何启发式假设（这一独立性是防止侧信道攻击所必需的）。这是因为 $\mathbf{z}$ 的分布与私钥无关（[引理 10](#lemma-10)），而 $\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{y}-c\mathbf{s}_{2})=\mathsf{LOW}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$，所以该量同样与私钥无关。
 
 #### 5.4.4 知识证明
 
@@ -1843,9 +1859,11 @@ $$
 
 ### 5.5 缩小公钥大小
 
-现在继续提高签名方案的效率，说明如何缩小公钥。上一节利用 $\mathbf{A}\mathbf{z}_{1} \approx c \mathbf{t}$，免去了图 5 协议中传输 $\mathbf{z}_{2}$ 的需要。与这一思路类似，注意到，若写成 $\mathbf{t} = \mathrm{HIGH}_{\mathcal{T}}(\mathbf{t}) + \mathrm{LOW}_{\mathcal{T}}(\mathbf{t})$（其中 $\mathcal{T} \subset \mathbb{Z}_{q}$），则 $\mathbf{A} \mathbf{z}_{1} \approx c \cdot (\mathrm{HIGH}_\mathcal{T}(\mathbf{t}) + \mathrm{LOW}_\mathcal{T}(\mathbf{t})) \approx c \cdot \mathrm{HIGH}_\mathcal{T}(\mathbf{t})$。换言之，验证者无需知道 $\mathbf{t}$ 的低位，就能近似检验验证方程。
+现在继续提高签名方案的效率，说明如何缩小公钥。上一节利用 $\mathbf{A}\mathbf{z}_{1} \approx c \mathbf{t}$，免去了[图 5](#figure-5) 协议中传输 $\mathbf{z}_{2}$ 的需要。与这一思路类似，注意到，若写成 $\mathbf{t} = \mathrm{HIGH}_{\mathcal{T}}(\mathbf{t}) + \mathrm{LOW}_{\mathcal{T}}(\mathbf{t})$（其中 $\mathcal{T} \subset \mathbb{Z}_{q}$），则 $\mathbf{A} \mathbf{z}_{1} \approx c \cdot (\mathrm{HIGH}_\mathcal{T}(\mathbf{t}) + \mathrm{LOW}_\mathcal{T}(\mathbf{t})) \approx c \cdot \mathrm{HIGH}_\mathcal{T}(\mathbf{t})$。换言之，验证者无需知道 $\mathbf{t}$ 的低位，就能近似检验验证方程。
 
-不将 $\mathrm{LOW}_{\mathcal{T}}(\mathbf{t})$ 纳入公钥后，又会遇到与上一节类似的问题：如果不对协议作些调整，验证者就需要在仅知道 $\mathrm{HIGH}_{\mathcal{T}}(\mathbf{t})$ 而非整个 $\mathbf{t}$ 的情况下计算 $\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$。下面介绍使证明成立所需的技术，并在图 9 中给出来自 \[[DKL+18](#ref-dkl-plus-18)\] 的协议。
+不将 $\mathrm{LOW}_{\mathcal{T}}(\mathbf{t})$ 纳入公钥后，又会遇到与上一节类似的问题：如果不对协议作些调整，验证者就需要在仅知道 $\mathrm{HIGH}_{\mathcal{T}}(\mathbf{t})$ 而非整个 $\mathbf{t}$ 的情况下计算 $\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{z}-c\mathbf{t})$。下面介绍使证明成立所需的技术，并在[图 9](#figure-9) 中给出来自 \[[DKL+18](#ref-dkl-plus-18)\] 的协议。
+
+<a id="figure-9" class="reference-anchor"></a>
 
 私有信息：$\mathbf{s}_1\in [\beta ]^m,\mathbf{s}_2\in [\beta ]^n$ 
 
@@ -1917,11 +1935,11 @@ c\leftarrow\mathcal{C}
 \end{array}
 $$
 
-图 9：证明和公钥都更小的零知识证明系统。集合 $\mathcal{S} \subseteq \mathbb{Z}_{q}$ 的大小为 $2^{\kappa}$，函数 $\mathrm{HIGH}_\mathcal{S}, \mathrm{LOW}_\mathcal{S}$ 及常数 $\delta_\mathcal{S} \approx q/2^{\kappa+1}$ 按[第 5.4 节](#54)正文中的方式定义。集合 $\mathcal{T}$ 的大小为 $2^{\ell}$，并要求 $c \cdot LOW_\mathcal{T}(\mathbf{t}) \in [\delta_\mathcal{S}]^{n}$ 以高概率成立（概率针对 $c$ 和 $\mathbf{t}$ 的选择）。函数 $\mathrm{HINT}$ 和 $\mathrm{USEHINT}$ 按[第 5.5 节](#55)正文中的方式定义。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}, \mathbf{s}_{2} \in [\beta]^{n}$，并生成关于满足式 [(93)](#eq-93) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}, \bar{\mathbf{s}}_{2} \in [q/2^{\kappa-1}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由引理 10 定义；$\bar{\beta}$ 的值影响协议的完备性（即不发送 $\bot$ 的概率），具体如式 [(89)](#eq-89) 所述。
+图 9：证明和公钥都更小的零知识证明系统。集合 $\mathcal{S} \subseteq \mathbb{Z}_{q}$ 的大小为 $2^{\kappa}$，函数 $\mathrm{HIGH}_\mathcal{S}, \mathrm{LOW}_\mathcal{S}$ 及常数 $\delta_\mathcal{S} \approx q/2^{\kappa+1}$ 按[第 5.4 节](#54)正文中的方式定义。集合 $\mathcal{T}$ 的大小为 $2^{\ell}$，并要求 $c \cdot LOW_\mathcal{T}(\mathbf{t}) \in [\delta_\mathcal{S}]^{n}$ 以高概率成立（概率针对 $c$ 和 $\mathbf{t}$ 的选择）。函数 $\mathrm{HINT}$ 和 $\mathrm{USEHINT}$ 按[第 5.5 节](#55)正文中的方式定义。证明者知道满足式 [(73)](#eq-73) 的 $\mathbf{s}_{1} \in [\beta]^{m}, \mathbf{s}_{2} \in [\beta]^{n}$，并生成关于满足式 [(93)](#eq-93) 的 $\bar{\mathbf{s}}_{1} \in [2\bar{\beta}]^{m}, \bar{\mathbf{s}}_{2} \in [q/2^{\kappa-1}]^{n}$ 以及 $\bar{c} \in \bar{\mathcal{C}}$ 的 ZKPoK。$\gamma$ 的值由[引理 10](#lemma-10) 定义；$\bar{\beta}$ 的值影响协议的完备性（即不发送 $\bot$ 的概率），具体如式 [(89)](#eq-89) 所述。
 
 类似于上一节定义集合 $\mathcal{S} \subset \mathbb{Z}_q$ 的方式，定义集合 $\mathcal{T} \subset \mathbb{Z}_q$，它由 $2^\ell$ 个元素组成，相邻元素间距约为 $q / 2^\ell$。不将整个向量 $\mathbf{t} \in \mathcal{R}_{q,f}^n$ 作为公钥的一部分输出，而将它分解为 $\mathbf{t} = \mathbf{t}_1 + \mathbf{t}_0$，其中 $\mathbf{t}_1 = \mathrm{HIGH}_{\mathcal{T}}(\mathbf{t})$，$\mathbf{t}_0 = \mathrm{LOW}_{\mathcal{T}}(\mathbf{t})$。公钥只包含 $\mathbf{t}_1$，表示它需要 $nd\ell$ 比特，而表示整个 $\mathbf{t}$ 则需要 $nd\log q$ 比特。
 
-图 8 协议中验证者使用 $\mathbf{t}$ 的地方，是计算 $\mathbf{A}\mathbf{z} - c\mathbf{t}$。如果验证者只有 $\mathbf{t}_{1}$，则可以计算 $\mathbf{A}\mathbf{z} - c\mathbf{t}_{1} = \mathbf{A}\mathbf{z} - c\mathbf{t} + c\mathbf{t}_{0}$。为了使验证成立，需要
+[图 8](#figure-8) 协议中验证者使用 $\mathbf{t}$ 的地方，是计算 $\mathbf{A}\mathbf{z} - c\mathbf{t}$。如果验证者只有 $\mathbf{t}_{1}$，则可以计算 $\mathbf{A}\mathbf{z} - c\mathbf{t}_{1} = \mathbf{A}\mathbf{z} - c\mathbf{t} + c\mathbf{t}_{0}$。为了使验证成立，需要
 
 $$
 \mathrm{HIGH} _ \mathcal{S} (\mathbf {A} \mathbf {z} - c \mathbf {t}) = \mathrm{HIGH} _ \mathcal{S} (\mathbf {A} \mathbf {z} - c \mathbf {t} _ {1}),
@@ -1943,7 +1961,7 @@ $$
 
 [^31]: 事实上，即使 $c\mathbf{t}_{0} \in [2\delta_\mathcal{S} - 1]$ 而非 $[\delta_\mathcal{S}]$，也有办法计算一个一比特提示。其依据是：对于任意点 $v \in \mathbb{Z}_{q}$，集合 $v + [2\delta_\mathcal{S} - 1]$ 至多包含 $\mathcal{S}$ 中的 $2$ 个点，因此可以用提示来指向正确的点。Jonathan Katz 和 \[[BDL24](#ref-bdl24)\] 独立观察到了这一点。该观察使公钥能够进一步压缩，因为现在 $\mathbf{t}_{0}$ 的范数基本上可以增大一倍（即系数可以多一比特），代价只是签名大小略微增加，因为新的提示向量将均匀随机分布，而不再稀疏。\[[BDL24](#ref-bdl24), Table 1\] 给出了一些可能的权衡。这一观察是在 ML-DSA 已成为标准之后作出的，因此未能考虑将其纳入该标准。
 
-采用这一记号，图 9 给出了压缩签名和公钥后的算法。对于安全性证明，一个重要事实是：对于任意向量 $\mathbf{v} \in \mathcal{R}_{q,f}^{n}$ 和提示向量 $\mathbf{h} \in \{0,1\}^{dn}$，都有
+采用这一记号，[图 9](#figure-9) 给出了压缩签名和公钥后的算法。对于安全性证明，一个重要事实是：对于任意向量 $\mathbf{v} \in \mathcal{R}_{q,f}^{n}$ 和提示向量 $\mathbf{h} \in \{0,1\}^{dn}$，都有
 
 <a id="eq-92"></a>
 
@@ -1953,7 +1971,7 @@ $$
 
 上式直接由 $\mathrm{USEHINT}$ 过程以及 $\mathcal{S}$ 中相邻两点距离为 $q/2^{\kappa}$ 这一事实推出。
 
-图 9 协议证明的陈述是：知道满足下式的 $\bar{\mathbf{s}}_1 \in [2\bar{\beta}]^m$、$\bar{\mathbf{s}}_2 \in [q/2^{\kappa-1}]^n$ 和 $\bar{c} \in \bar{\mathcal{C}}$：
+[图 9](#figure-9) 协议证明的陈述是：知道满足下式的 $\bar{\mathbf{s}}_1 \in [2\bar{\beta}]^m$、$\bar{\mathbf{s}}_2 \in [q/2^{\kappa-1}]^n$ 和 $\bar{c} \in \bar{\mathcal{C}}$：
 
 <a id="eq-93"></a>
 
@@ -1965,7 +1983,7 @@ $$
 
 #### 5.5.1 正确性与零知识性
 
-有一点值得再次强调：虽然验证者在验证时无需知道 $\mathbf{t}_{0} = \mathsf{LOW}_{\mathcal{T}}(\mathbf{t})$ 的值，但不应将 $\mathbf{t}_{0}$ 视为秘密，因为输出 $\mathbf{h}$ 会泄露有关 $\mathbf{t}_{0}$ 的一些信息。在证明中，应当将 $\mathbf{t}$ 理解为验证者知道整个 $\mathbf{t}$，但验证时只使用 $\mathbf{t}_{1}$。该方案的零知识性直接来自图 8 方案的零知识性，后者已在[第 5.4.2 节](#542)确立，因为证明者输出的唯一区别在于构造了提示 $\mathbf{h}$，而只需知道 $\mathbf{z}$ 和 $\mathbf{t}$ 就能完成这一构造。
+有一点值得再次强调：虽然验证者在验证时无需知道 $\mathbf{t}_{0} = \mathsf{LOW}_{\mathcal{T}}(\mathbf{t})$ 的值，但不应将 $\mathbf{t}_{0}$ 视为秘密，因为输出 $\mathbf{h}$ 会泄露有关 $\mathbf{t}_{0}$ 的一些信息。在证明中，应当将 $\mathbf{t}$ 理解为验证者知道整个 $\mathbf{t}$，但验证时只使用 $\mathbf{t}_{1}$。该方案的零知识性直接来自[图 8](#figure-8) 方案的零知识性，后者已在[第 5.4.2 节](#542)确立，因为证明者输出的唯一区别在于构造了提示 $\mathbf{h}$，而只需知道 $\mathbf{z}$ 和 $\mathbf{t}$ 就能完成这一构造。
 
 只要 $c\mathbf{t}_0 \in [\delta_\mathcal{S}]^n$，方案就具有正确性。注意，如果选择的 $\mathbf{t}_0$ 使 $c\mathbf{t}_0$ 有时不属于 $[\delta_\mathcal{S}]^n$，也不会影响方案的安全性，不过这会要求证明者额外重启。
 
@@ -1978,6 +1996,8 @@ $$
 $$
 \text {USEHINT} (\mathbf {A} \mathbf {z} - c \mathbf {t} _ {1}, \mathbf {h}) = \text {USEHINT} (\mathbf {A} \mathbf {z} ^ {\prime} - c ^ {\prime} \mathbf {t} _ {1}, \mathbf {h} ^ {\prime}).\tag{94}
 $$
+
+<a id="figure-10" class="reference-anchor"></a>
 
 私有信息：$\mathbf{s}_1 \leftarrow [\beta]^m, \mathbf{s}_2 \leftarrow [\beta]^n$ 
 
@@ -2041,7 +2061,7 @@ c
 \end{array}
 $$
 
-图 10：对图 9 的协议应用 Fiat-Shamir 变换所得的数字签名方案，用于对消息（摘要）$\mu$ 签名。注意，作为良好的密码实践，在此将公钥也作为哈希函数 $\mathcal{H}$ 的输入。这可以防止某些可塑性攻击：在这类攻击中，看到一个公钥对应的签名后，就能为另一个与之密切相关的公钥构造签名。
+图 10：对[图 9](#figure-9) 的协议应用 Fiat-Shamir 变换所得的数字签名方案，用于对消息（摘要）$\mu$ 签名。注意，作为良好的密码实践，在此将公钥也作为哈希函数 $\mathcal{H}$ 的输入。这可以防止某些可塑性攻击：在这类攻击中，看到一个公钥对应的签名后，就能为另一个与之密切相关的公钥构造签名。
 
 由式 [(92)](#eq-92) 可知
 
@@ -2061,11 +2081,11 @@ $$
 
 ### 5.6 数字签名
 
-图 10 中的签名过程是图 9 协议的 Fiat-Shamir 变换，其中私钥 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 从各自的取值域中均匀随机选取。如前所述，一个重要之处在于，协议不再具有交互性，因此证明者永远无需发送 $\bot$；他只需不断重新启动协议，直到拒绝采样步骤成功即可。这就是为什么只需在不输出 $\bot$ 的情况下证明零知识性。
+[图 10](#figure-10) 中的签名过程是[图 9](#figure-9) 协议的 Fiat-Shamir 变换，其中私钥 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 从各自的取值域中均匀随机选取。如前所述，一个重要之处在于，协议不再具有交互性，因此证明者永远无需发送 $\bot$；他只需不断重新启动协议，直到拒绝采样步骤成功即可。这就是为什么只需在不输出 $\bot$ 的情况下证明零知识性。
 
-该协议的正确性和可模拟性／零知识性，直接来自图 9 交互式协议的相应性质以及随机预言机启发式。根据 Fiat-Shamir 变换的一般性质，从成功的签名者那里，可以提取与[第 5.5.2 节](#552)中从成功的证明者那里相同的对象，即满足式 [(93)](#eq-93) 的 $\bar{\mathbf{s}}_1$、$\bar{\mathbf{s}}_2$ 和 $\bar{c}$。再应用引理 9，可知提取这些值与求解 Ring-LWE 或 Ring-SIS 一样困难。
+该协议的正确性和可模拟性／零知识性，直接来自[图 9](#figure-9) 交互式协议的相应性质以及随机预言机启发式。根据 Fiat-Shamir 变换的一般性质，从成功的签名者那里，可以提取与[第 5.5.2 节](#552)中从成功的证明者那里相同的对象，即满足式 [(93)](#eq-93) 的 $\bar{\mathbf{s}}_1$、$\bar{\mathbf{s}}_2$ 和 $\bar{c}$。再应用[引理 9](#lemma-9)，可知提取这些值与求解 Ring-LWE 或 Ring-SIS 一样困难。
 
-表 4：一个数字签名方案的示例参数，与 CRYSTALS-Dilithium \[[DKL+18](#ref-dkl-plus-18)\] 的 NIST 第 3 级参数集非常相似（即应达到与 AES-192 相当的困难程度）。
+<span id="table-4" class="reference-anchor">表 4</span>：一个数字签名方案的示例参数，与 CRYSTALS-Dilithium \[[DKL+18](#ref-dkl-plus-18)\] 的 NIST 第 3 级参数集非常相似（即应达到与 AES-192 相当的困难程度）。
 
 | 参数                   | 值                                                       |
 | ---------------------- | -------------------------------------------------------- |
@@ -2086,9 +2106,9 @@ $$
 
 将在环 $\mathcal{R}_{q,f}$ 上工作，其中 $f = X^{256} + 1$，$q = 2^{23} - 2^{13} + 1$。如[第 4.6 节](#46)所述，由于 $q \equiv 1 \pmod{512}$，选取这样的素数 $q$ 可以实现高效的 NTT。挑战集合 $\mathcal{C}$ 由系数取 $0, \pm 1$ 的多项式组成，其中恰好有 $207$ 个 $0$（因而有 $49$ 个非零系数）；秘密 $\mathbf{s}_{1}, \mathbf{s}_{2}$ 的系数则从 $[\beta]$ 中随机选取，其中 $\beta = 4$。
 
-随后按表 4 定义集合 $\mathcal{S}$ 和 $\mathcal{T}$。集合 $\mathcal{S}$ 的定义意味着，$\mathbb{Z}_{q}$ 中的每个点与 $\mathcal{S}$ 中最近元素的距离至多为 $(q-1)/32+1$。类似地，$\mathcal{T}$ 的定义意味着 $\mathbf{t}_{0}$ 的所有系数都属于 $[2^{12}]$。此时可以验证，$c\mathbf{t}_{0}$ 的系数以高概率属于 $[\delta_\mathcal{S}]$，因此方案（以高概率）是正确的。为使方案始终正确，证明者还应检查 $c\mathbf{t}_{0} \in [\delta_\mathcal{S}]^{6}$，并将参数设置为使这种情况发生的概率非常小 $(<1\%)$。[^32]
+随后按[表 4](#table-4) 定义集合 $\mathcal{S}$ 和 $\mathcal{T}$。集合 $\mathcal{S}$ 的定义意味着，$\mathbb{Z}_{q}$ 中的每个点与 $\mathcal{S}$ 中最近元素的距离至多为 $(q-1)/32+1$。类似地，$\mathcal{T}$ 的定义意味着 $\mathbf{t}_{0}$ 的所有系数都属于 $[2^{12}]$。此时可以验证，$c\mathbf{t}_{0}$ 的系数以高概率属于 $[\delta_\mathcal{S}]$，因此方案（以高概率）是正确的。为使方案始终正确，证明者还应检查 $c\mathbf{t}_{0} \in [\delta_\mathcal{S}]^{6}$，并将参数设置为使这种情况发生的概率非常小 $(<1\%)$。[^32]
 
-[^32]: 事实上，对于表 4 给出的参数集，检查失败的情况从不会发生，因为 $\|\mathbf{t}_0\|_\infty\le 2^{12}$ 且 $\|c\|_1=49$，所以 $\|c\mathbf{t}_0\|_\infty\le 49\cdot2^{12}<\delta_{\mathcal{S}}$。
+[^32]: 事实上，对于[表 4](#table-4) 给出的参数集，检查失败的情况从不会发生，因为 $\|\mathbf{t}_0\|_\infty\le 2^{12}$ 且 $\|c\|_1=49$，所以 $\|c\mathbf{t}_0\|_\infty\le 49\cdot2^{12}<\delta_{\mathcal{S}}$。
 
 根据式 [(89)](#eq-89)，不发生重启的概率约为
 
@@ -2102,13 +2122,13 @@ $$
 
 签名由向量 $\mathbf{z}_{1}$、挑战 $c$ 和提示向量 $\mathbf{h}$ 组成。由于 $\mathbf{z}_{1}$ 的系数属于 $[\bar{\beta}]$，表示每个系数需要 $20$ 比特，共计 $256 \cdot 5 \cdot 20$ 比特。挑战 $c$ 大约包含 $256$ 比特，而提示向量 $\mathbf{h}$ 是维数为 $256 \cdot 6$ 的二进制向量，因此最多需要这么多比特来表示。由此得到签名总大小约为 $3424$ 字节。
 
-一些优化。现在讨论图 10 协议的一些小优化，它们被用于 NIST 的 ML-DSA（Dilithium）标准中。如果消息 $\mu$ 很长，那么每次重启后都执行计算 $\mathcal{H}(\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{y}),\mu,\mathbf{A},\mathbf{t})$ 会造成不必要的低效率。因此，合理的做法是先用 SHA-512 对真实消息 $\mu'$ 与公钥一起进行哈希，得到 $512$ 比特摘要 $\mu$，并在签名过程中只使用该摘要。
+一些优化。现在讨论[图 10](#figure-10) 协议的一些小优化，它们被用于 NIST 的 ML-DSA（Dilithium）标准中。如果消息 $\mu$ 很长，那么每次重启后都执行计算 $\mathcal{H}(\mathrm{HIGH}_\mathcal{S}(\mathbf{A}\mathbf{y}),\mu,\mathbf{A},\mathbf{t})$ 会造成不必要的低效率。因此，合理的做法是先用 SHA-512 对真实消息 $\mu'$ 与公钥一起进行哈希，得到 $512$ 比特摘要 $\mu$，并在签名过程中只使用该摘要。
 
 为使 $\mathbf{y}$ 的采样尽可能高效（因为每次重启也都要重新采样一次），可以使每个系数的采样范围大小为 $2$ 的幂，即恰好用 $20$ 比特。因此，不再从 $[\gamma + \bar{\beta}] = [2^{19} - 1]$ 中采样——此时每个系数的取值域大小为 $2^{20} - 1$——而改为从集合 $\left\{-(2^{19} - 1), \ldots, 2^{19} - 1, 2^{19}\right\}$ 中采样每个系数。
 
-前文提到的另一项优化，是发送提示向量 $\mathbf{h}$ 的紧凑表示。对于表 4 中的参数，向量 $\mathbf{h}$ 以高概率至多含 $55$ 个 $1$，因而有 $256 \cdot 6 - 55$ 个 $0$。无需发送一个 $256 \cdot 6$ 比特串，而可以指定多项式中 $1$ 的位置（每个非零系数需要 $8$ 比特，共 $8 \cdot 55$ 比特），并另外指定多项式之间的边界，这需要 $5 \cdot 6 = 30$ 比特；合计为 $470$ 比特，而非直接表示所需的 $256 \cdot 6 = 1536$ 比特，从而将签名大小缩小至约 $3290$ 字节。如果 $\mathbf{h}$ 中非零项的数量超过 $55$，签名者就需要重新开始；但实验表明，这种情况发生的概率非常小，不会对运行时间产生实质影响。
+前文提到的另一项优化，是发送提示向量 $\mathbf{h}$ 的紧凑表示。对于[表 4](#table-4) 中的参数，向量 $\mathbf{h}$ 以高概率至多含 $55$ 个 $1$，因而有 $256 \cdot 6 - 55$ 个 $0$。无需发送一个 $256 \cdot 6$ 比特串，而可以指定多项式中 $1$ 的位置（每个非零系数需要 $8$ 比特，共 $8 \cdot 55$ 比特），并另外指定多项式之间的边界，这需要 $5 \cdot 6 = 30$ 比特；合计为 $470$ 比特，而非直接表示所需的 $256 \cdot 6 = 1536$ 比特，从而将签名大小缩小至约 $3290$ 字节。如果 $\mathbf{h}$ 中非零项的数量超过 $55$，签名者就需要重新开始；但实验表明，这种情况发生的概率非常小，不会对运行时间产生实质影响。
 
-安全性。如前所述（见[第 5.5 节](#55)、引理 9 和式 [(93)](#eq-93)），该签名方案的安全性依赖于 $\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 和 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 问题的困难性。$\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 假设用于证明公钥 $(\mathbf{A},\mathbf{t})$ 与均匀分布不可区分，而 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 假设用于说明攻击者不能伪造签名，因而不能找到式 [(93)](#eq-93) 中 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 问题的解，其中 $\bar{\mathbf{s}}_{1}$ 的系数属于 $[2\bar{\beta}]$，$\bar{\mathbf{s}}_{2}$ 的系数属于 $[4\delta_\mathcal{S}]$（见式 [(95)](#eq-95)）；对于表 4 中的参数，这两个集合都大约为 $[2^{20}]$。因此，这对应于表 2 参数集的中间一行，可以看出，控制问题困难性的 $\delta$ 值对于 $\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 和 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 大致相同。
+安全性。如前所述（见[第 5.5 节](#55)、[引理 9](#lemma-9) 和式 [(93)](#eq-93)），该签名方案的安全性依赖于 $\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 和 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 问题的困难性。$\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 假设用于证明公钥 $(\mathbf{A},\mathbf{t})$ 与均匀分布不可区分，而 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 假设用于说明攻击者不能伪造签名，因而不能找到式 [(93)](#eq-93) 中 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 问题的解，其中 $\bar{\mathbf{s}}_{1}$ 的系数属于 $[2\bar{\beta}]$，$\bar{\mathbf{s}}_{2}$ 的系数属于 $[4\delta_\mathcal{S}]$（见式 [(95)](#eq-95)）；对于[表 4](#table-4) 中的参数，这两个集合都大约为 $[2^{20}]$。因此，这对应于[表 2](#table-2) 参数集的中间一行，可以看出，控制问题困难性的 $\delta$ 值对于 $\mathcal{R}_{q,f}$-$\mathsf{LWE}_{n,m,\beta}$ 和 $\mathcal{R}_{q,f}$-$\mathsf{SIS}_{n,m+1,2\bar{\beta}}$ 大致相同。
 
 ## 参考文献
 
