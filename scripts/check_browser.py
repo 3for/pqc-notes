@@ -15,6 +15,8 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[1]
 ARTICLE = "basic-lattice-cryptography-notes-zh"
 BLOCKCHAIN = "blockchain/pqc-migration"
+LAMPORT = "hash-based-pqc/lamport"
+WOTS = "hash-based-pqc/WOTS"
 PREFIX = "/pqc-notes/"
 
 
@@ -38,6 +40,241 @@ def check_math(page, minimum=101):
         "nodes => nodes.filter(n => !n.querySelector('mjx-container')).map(n => n.textContent.slice(0, 100))"
     )
     assert not missing, f"Unrendered math at {page.url}: {missing[:5]}"
+
+
+def check_lamport(page, browser, base, screenshots, local_only):
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    page.goto(base + LAMPORT + "/", wait_until="networkidle")
+    check_math(page, minimum=29)
+    demo = page.locator("[data-lamport-demo]")
+    demo.wait_for(state="visible")
+    buttons = [demo.locator(f"[data-lamport-bit='{i}']") for i in range(4)]
+
+    def check_state(digest):
+        assert demo.locator("[data-lamport-digest]").text_content().strip() == digest
+        secrets = [f"sk{i + 1},{bit}" for i, bit in enumerate(digest)]
+        assert demo.locator("[data-lamport-signature]").text_content().strip() == " ‖ ".join(secrets)
+        selected = demo.locator(".lamport-demo__secret[data-selected='true']").all_text_contents()
+        selected = [" ".join(text.split()) for text in selected]
+        assert len(selected) == 4, selected
+        for i, bit in enumerate(digest):
+            assert buttons[i].get_attribute("aria-pressed") == str(bit == "1").lower()
+            assert any(f"{secrets[i]} ✓" in text for text in selected), selected
+
+    check_state("1010")
+    for value in range(16):
+        digest = f"{value:04b}"
+        for i, bit in enumerate(digest):
+            if buttons[i].get_attribute("aria-pressed") != str(bit == "1").lower():
+                buttons[i].click()
+        check_state(digest)
+
+    demo.locator("[data-lamport-reset]").click()
+    check_state("1010")
+    buttons[0].focus()
+    buttons[0].press("Space")
+    check_state("0010")
+    buttons[0].press("Enter")
+    check_state("1010")
+    if screenshots:
+        demo.screenshot(path=str(screenshots / "lamport-desktop.png"))
+
+    page.set_viewport_size({"width": 390, "height": 844})
+    dimensions = page.evaluate("({viewport:innerWidth, page:document.documentElement.scrollWidth})")
+    assert dimensions["page"] <= dimensions["viewport"] + 1, dimensions
+    assert demo.evaluate("node => node.scrollWidth <= node.clientWidth + 1"), "Lamport demo overflows."
+    buttons[3].click()
+    check_state("1011")
+    demo.locator("[data-lamport-reset]").click()
+    check_state("1010")
+    if screenshots:
+        demo.screenshot(path=str(screenshots / "lamport-mobile.png"))
+
+    scheme = page.locator("body").get_attribute("data-md-color-scheme")
+    page.locator("body").evaluate("node => node.setAttribute('data-md-color-scheme', 'slate')")
+    assert all(button.is_visible() for button in buttons)
+    buttons[1].click()
+    check_state("1110")
+    demo.locator("[data-lamport-reset]").click()
+    check_state("1010")
+    if screenshots:
+        demo.screenshot(path=str(screenshots / "lamport-dark.png"))
+    page.locator("body").evaluate("(node, scheme) => node.setAttribute('data-md-color-scheme', scheme)", scheme)
+
+    fallback_context = browser.new_context(java_script_enabled=False)
+    try:
+        fallback_context.route("**/*", local_only)
+        fallback = fallback_context.new_page()
+        response = fallback.goto(base + LAMPORT + "/", wait_until="networkidle")
+        assert response.status == 200
+        assert fallback.locator("[data-lamport-demo]").count() == 1
+        assert fallback.locator("[data-lamport-demo]").is_hidden()
+        assert fallback.locator("article table").first.is_visible()
+        assert fallback.locator(".arithmatex").filter(has_text="H(M)=1010").is_visible()
+        signature = fallback.locator(".arithmatex").filter(has_text=r"\sigma").filter(has_text="sk_{1,1}")
+        assert signature.is_visible()
+        assert all(secret in signature.text_content() for secret in ("sk_{2,0}", "sk_{3,1}", "sk_{4,0}"))
+    finally:
+        fallback_context.close()
+    print("Lamport states, keyboard, reset, themes, mobile layout and no-JS fallback passed.", flush=True)
+    return dimensions
+
+
+def check_wots(page, browser, base, screenshots, local_only):
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    page.goto(base + WOTS + "/", wait_until="networkidle")
+    check_math(page, minimum=49)
+    article = page.locator("article")
+    assert article.locator("h1").count() == 1, "Demo values must not become article headings."
+    headings = article.locator("h1, h2, h3, h4, h5, h6").evaluate_all(
+        "nodes => nodes.map(n => ({level: Number(n.tagName.slice(1)), text: n.textContent.trim()}))"
+    )
+    for previous, current in zip(headings, headings[1:]):
+        assert current["level"] <= previous["level"] + 1, headings
+    assert not any(re.fullmatch(r"\d+(?:\s*次)?[¶\s]*", heading["text"]) for heading in headings), headings
+    section_ids = set(article.locator("[id]").evaluate_all("nodes => nodes.map(n => n.id)"))
+    section_links = page.locator("article a[href^='#'], .md-sidebar a[href^='#']").evaluate_all(
+        "nodes => nodes.map(n => n.getAttribute('href')).filter(href => href.length > 1)"
+    )
+    assert section_links, "WOTS section links are missing."
+    assert all(unquote(link[1:]) in section_ids for link in section_links), section_links
+    article.locator("a[href='#checksum']").first.click()
+    assert urlsplit(page.url).fragment == "checksum"
+
+    chain = page.locator("[data-wots-chain-demo]")
+    parameters = page.locator("[data-wots-parameter-demo]")
+    checksum = page.locator("[data-wots-checksum-demo]")
+    demos = [("chain", chain), ("parameters", parameters), ("checksum", checksum)]
+    for _, demo in demos:
+        demo.wait_for(state="visible")
+    digit = chain.locator("[data-wots-digit]")
+
+    def check_chain(value):
+        assert digit.input_value() == str(value)
+        assert chain.locator("[data-wots-sign-steps]").text_content().strip() == str(value)
+        assert chain.locator("[data-wots-verify-steps]").text_content().strip() == str(15 - value)
+        assert chain.locator("[data-wots-chain-signature]").text_content().strip() == f"x{value}"
+        nodes = chain.locator("[data-wots-node]")
+        assert nodes.count() == 16
+        for index in range(16):
+            expected = "sign" if index < value else "signature" if index == value else "verify"
+            assert chain.locator(f"[data-wots-node='{index}']").get_attribute("data-stage") == expected
+
+    check_chain(6)
+    for value in range(16):
+        digit.evaluate("(node, value) => { node.value = value; node.dispatchEvent(new Event('input', {bubbles: true})); }", str(value))
+        check_chain(value)
+    digit.press("Home")
+    check_chain(0)
+    digit.press("ArrowRight")
+    check_chain(1)
+    digit.press("End")
+    check_chain(15)
+    chain.locator("[data-wots-chain-reset]").click()
+    check_chain(6)
+
+    parameter = parameters.locator("[data-wots-parameter]")
+    parameter_fields = ("message-chains", "checksum-chains", "total-chains", "signature-bytes", "total-steps")
+    parameter_cases = {4: (128, 5, 133, 4256, 399), 16: (64, 3, 67, 2144, 1005), 256: (32, 2, 34, 1088, 8670)}
+
+    def check_parameter(value):
+        parameter.select_option(str(value))
+        for field, expected in zip(parameter_fields, parameter_cases[value]):
+            assert parameters.locator(f"[data-wots-{field}]").text_content().strip() == str(expected)
+
+    assert parameter.input_value() == "16"
+    for value in parameter_cases:
+        check_parameter(value)
+    check_parameter(16)
+
+    target = checksum.locator("[data-wots-target]")
+    cases = {
+        "ABCE": ("0D", ["same", "same", "same", "forward", "same", "backward"]),
+        "ABCD": ("0E", ["same"] * 6),
+        "0000": ("3C", ["backward"] * 4 + ["forward", "backward"]),
+        "FFFF": ("00", ["forward"] * 4 + ["same", "backward"]),
+        "ABCC": ("0F", ["same", "same", "same", "backward", "same", "forward"]),
+        "ABCB": ("10", ["same", "same", "same", "backward", "forward", "backward"]),
+    }
+
+    def check_checksum(value):
+        target.fill(value)
+        expected_checksum, directions = cases[value.upper()]
+        assert target.get_attribute("aria-invalid") in (None, "false")
+        assert checksum.locator("[data-wots-checksum-error]").is_hidden()
+        assert checksum.locator("[data-wots-checksum-result]").is_visible()
+        assert checksum.locator("[data-wots-checksum-value]").text_content().strip() == expected_checksum
+        rows = checksum.locator("[data-wots-comparison-row]")
+        assert rows.count() == 6
+        assert rows.evaluate_all("nodes => nodes.map(n => n.dataset.direction)") == directions
+        expected_status = "unchanged" if value.upper() == "ABCD" else "blocked"
+        assert checksum.locator("[data-wots-attack-status]").get_attribute("data-result") == expected_status
+
+    assert target.input_value() == "ABCE"
+    for value in cases:
+        check_checksum(value)
+    check_checksum("abce")
+    for value in ("", "ABC", "ABCG"):
+        target.fill(value)
+        assert target.get_attribute("aria-invalid") == "true"
+        assert checksum.locator("[data-wots-checksum-error]").is_visible()
+        assert checksum.locator("[data-wots-checksum-result]").is_hidden()
+    checksum.locator("[data-wots-checksum-reset]").click()
+    assert target.input_value() == "ABCE"
+    assert checksum.locator("[data-wots-checksum-result]").is_visible()
+    check_checksum("ABCE")
+
+    def capture(mode):
+        if screenshots:
+            for name, demo in demos:
+                demo.screenshot(path=str(screenshots / f"wots-{name}-{mode}.png"),
+                                style=".md-header, .md-tabs, .md-top { visibility: hidden !important; }")
+
+    capture("desktop")
+    page.set_viewport_size({"width": 390, "height": 844})
+    dimensions = page.evaluate("({viewport:innerWidth, page:document.documentElement.scrollWidth})")
+    assert dimensions["page"] <= dimensions["viewport"] + 1, dimensions
+    for name, demo in demos:
+        assert demo.evaluate("node => node.scrollWidth <= node.clientWidth + 1"), f"WOTS {name} overflows."
+    digit.press("Home")
+    check_chain(0)
+    chain.locator("[data-wots-chain-reset]").click()
+    check_chain(6)
+    check_parameter(256)
+    check_parameter(16)
+    check_checksum("ABCB")
+    check_checksum("ABCE")
+    capture("mobile")
+
+    scheme = page.locator("body").get_attribute("data-md-color-scheme")
+    page.locator("body").evaluate("node => node.setAttribute('data-md-color-scheme', 'slate')")
+    digit.press("ArrowRight")
+    check_chain(7)
+    chain.locator("[data-wots-chain-reset]").click()
+    check_parameter(4)
+    check_parameter(16)
+    check_checksum("ABCD")
+    check_checksum("ABCE")
+    capture("dark")
+    page.locator("body").evaluate("(node, scheme) => node.setAttribute('data-md-color-scheme', scheme)", scheme)
+
+    fallback_context = browser.new_context(java_script_enabled=False)
+    try:
+        fallback_context.route("**/*", local_only)
+        fallback = fallback_context.new_page()
+        response = fallback.goto(base + WOTS + "/", wait_until="networkidle")
+        assert response.status == 200
+        for name in ("chain", "parameter", "checksum"):
+            demo = fallback.locator(f"[data-wots-{name}-demo]")
+            assert demo.count() == 1 and demo.is_hidden()
+        assert fallback.locator("article table").first.is_visible()
+        assert fallback.locator(".arithmatex").filter(has_text=r"\underset{\text{私钥}}{x_0}").is_visible()
+        assert fallback.locator(".arithmatex").filter(has_text=r"H^9(\sigma)").is_visible()
+        assert fallback.locator("article table").filter(has_text="2,144 B").count() >= 1
+    finally:
+        fallback_context.close()
+    print("WOTS formulas, headings, 16 chain positions, parameters, checksum, keyboard, themes, mobile and no-JS fallback passed.", flush=True)
+    return dimensions
 
 
 def main():
@@ -163,12 +400,18 @@ def main():
                 page.set_viewport_size({"width": 1440, "height": 1000})
                 page.goto(base, wait_until="networkidle")
                 page.screenshot(path=str(args.screenshots / "home-desktop.png"))
+            lamport_dimensions = check_lamport(page, browser, base, args.screenshots, local_only)
+            wots_dimensions = check_wots(page, browser, base, args.screenshots, local_only)
             assert not problems, problems
             print(json.dumps({"math_elements": formula_count, "equation_numbers": len(tags),
                               "images": len(images), "search_queries": queries,
                               "footnote_roundtrip": "passed", "mobile_width": dimensions,
                               "blockchain_search_queries": blockchain_queries,
                               "blockchain_mobile_width": blockchain_dimensions,
+                              "lamport_states": 16, "lamport_mobile_width": lamport_dimensions,
+                              "lamport_keyboard_reset_and_no_js": "passed",
+                              "wots_chain_positions": 16, "wots_parameters": [4, 16, 256],
+                              "wots_mobile_width": wots_dimensions, "wots_checksum_and_no_js": "passed",
                               "external_requests": 0}, ensure_ascii=False))
             browser.close()
     finally:

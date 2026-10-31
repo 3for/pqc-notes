@@ -15,10 +15,16 @@ nav = [
     { "区块链后量子迁移现状" = "blockchain/pqc-migration.md" },
   ] },
 ]
-extra_css = ["assets/stylesheets/extra.css"]
+extra_css = [
+  "assets/stylesheets/extra.css",
+  "assets/stylesheets/lamport-demo.css",
+  "assets/stylesheets/wots-demo.css",
+]
 extra_javascript = [
   "assets/javascripts/mathjax.js",
   "assets/vendor/mathjax/tex-chtml.js",
+  "assets/javascripts/lamport-demo.js",
+  "assets/javascripts/wots-demo.js",
 ]
 
 [project.theme]

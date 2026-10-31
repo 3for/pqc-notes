@@ -1,0 +1,327 @@
+.wots-demo {
+  min-width: 0;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  background: var(--md-default-bg-color);
+}
+
+.wots-demo .wots-demo__title {
+  margin: 0 0 0.75rem;
+  font-weight: 650;
+}
+
+.wots-demo .wots-demo__hint {
+  margin: 0.75rem 0 0;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.7rem;
+  line-height: 1.6;
+}
+
+.wots-demo .wots-demo__controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.wots-demo .wots-demo__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.wots-demo :is(input, select, button) {
+  max-width: 100%;
+  min-height: 2.2rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font: inherit;
+}
+
+.wots-demo :is(select, button) {
+  padding: 0.25rem 0.65rem;
+  cursor: pointer;
+}
+
+.wots-demo select {
+  appearance: auto;
+}
+
+.wots-demo input[type="range"] {
+  appearance: auto;
+  width: 100%;
+  border: 0;
+  accent-color: var(--md-primary-fg-color);
+  cursor: pointer;
+}
+
+.wots-demo :is(input, select, button, [tabindex]):focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 3px;
+}
+
+.wots-demo .wots-demo__chain-scroll {
+  max-width: 100%;
+  margin-top: 0.75rem;
+  overflow-x: auto;
+  padding: 0.2rem 0 0.6rem;
+}
+
+.wots-demo .wots-demo__chain {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(16, minmax(2.6rem, 1fr));
+  gap: 0.5rem;
+  min-width: 100%;
+  width: max-content;
+}
+
+.wots-demo .wots-demo__node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.2rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-fg-color--lightest);
+  font-variant-numeric: tabular-nums;
+}
+
+.wots-demo .wots-demo__node:not(:last-child)::after {
+  content: "→";
+  position: absolute;
+  top: 0.65rem;
+  left: 100%;
+  width: 0.5rem;
+  color: var(--md-default-fg-color);
+  font-size: 0.65rem;
+  text-align: center;
+}
+
+.wots-demo .wots-demo__node[data-stage="sign"] {
+  border-color: var(--md-primary-fg-color);
+  background: color-mix(in srgb, var(--md-primary-fg-color) 12%, var(--md-default-bg-color));
+}
+
+.wots-demo .wots-demo__node[data-stage="signature"] {
+  border: 2px solid var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent);
+  font-weight: 700;
+}
+
+.wots-demo .wots-demo__node-role,
+.wots-demo .wots-demo__node-state {
+  margin-top: 0.2rem;
+  font-size: 0.55rem;
+  white-space: nowrap;
+}
+
+.wots-demo .wots-demo__chain-value {
+  white-space: nowrap;
+}
+
+.wots-demo .wots-demo__summary {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 0.25rem;
+  background: var(--md-code-bg-color);
+  overflow-wrap: anywhere;
+}
+
+.wots-demo .wots-demo__metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 0.65rem;
+}
+
+.wots-demo .wots-demo__metric {
+  min-width: 0;
+  font-size: 0.7rem;
+}
+
+.wots-demo .wots-demo__value {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.wots-demo .wots-demo__signature {
+  margin-top: 0.5rem;
+}
+
+.wots-demo .wots-demo__reset {
+  margin-top: 0.75rem;
+  font-size: 0.7rem;
+}
+
+.wots-demo .wots-demo__reset:hover {
+  border-color: var(--md-accent-fg-color);
+}
+
+.wots-demo .wots-demo__chart-title {
+  margin: 0.75rem 0 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.wots-demo .wots-demo__bar-row {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr) 3.8rem;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0;
+  font-size: 0.65rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.wots-demo .wots-demo__bar-track {
+  height: 0.6rem;
+  overflow: hidden;
+  border-radius: 0.15rem;
+  background: var(--md-default-fg-color--lightest);
+}
+
+.wots-demo .wots-demo__bar {
+  height: 100%;
+  background: var(--md-default-fg-color--lighter);
+}
+
+.wots-demo .wots-demo__bar-number {
+  text-align: right;
+}
+
+.wots-demo .wots-demo__bar-row[data-selected="true"] {
+  font-weight: 700;
+}
+
+.wots-demo .wots-demo__bar-row[data-selected="true"] .wots-demo__bar {
+  background: var(--md-primary-fg-color);
+}
+
+.wots-demo [data-wots-target] {
+  width: 8rem;
+  padding: 0.25rem 0.5rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1em;
+}
+
+.wots-demo .wots-demo__checksum-controls {
+  display: block;
+}
+
+.wots-demo .wots-demo__checksum-controls label {
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.wots-demo .wots-demo__checksum-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.wots-demo .wots-demo__checksum-controls :is(input, button) {
+  box-sizing: border-box;
+  height: 2.2rem;
+  margin: 0;
+}
+
+.wots-demo .wots-demo__checksum-controls input {
+  flex: 0 1 8rem;
+  min-width: 0;
+}
+
+.wots-demo .wots-demo__checksum-controls button {
+  flex: 0 0 auto;
+}
+
+.wots-demo .wots-demo__hint + .wots-demo__controls {
+  margin-top: 0.75rem;
+}
+
+.wots-demo .wots-demo__error {
+  color: var(--md-typeset-a-color);
+  font-size: 0.75rem;
+}
+
+.wots-demo .wots-demo__attack-status {
+  margin: 0.3rem 0 0;
+  font-size: 0.75rem;
+}
+
+.wots-demo .wots-demo__table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.wots-demo .wots-demo__table-title {
+  margin: 0.75rem 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.wots-demo .wots-demo__comparison {
+  display: table;
+  width: 100%;
+  margin: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.wots-demo .wots-demo__comparison :is(th, td) {
+  min-width: 0;
+  padding: 0.45rem 0.35rem;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.wots-demo .wots-demo__comparison thead th {
+  background: var(--md-code-bg-color);
+  font-weight: 650;
+}
+
+.wots-demo .wots-demo__comparison thead th:nth-child(1) {
+  width: 21%;
+}
+
+.wots-demo .wots-demo__comparison thead th:nth-child(2) {
+  width: 18%;
+}
+
+.wots-demo .wots-demo__comparison thead th:nth-child(3) {
+  width: 23%;
+}
+
+.wots-demo .wots-demo__comparison tbody th {
+  font-weight: inherit;
+}
+
+.wots-demo .wots-demo__comparison :is(th, td):nth-child(2),
+.wots-demo .wots-demo__comparison :is(th, td):nth-child(3) {
+  text-align: center;
+}
+
+.wots-demo .wots-demo__comparison [data-direction="backward"] {
+  background: var(--md-accent-fg-color--transparent);
+  font-weight: 700;
+}
+
+@media (max-width: 30em) {
+  .wots-demo {
+    padding: 0.75rem;
+  }
+
+  .wots-demo .wots-demo__metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
