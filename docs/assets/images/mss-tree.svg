@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 390" role="img" aria-labelledby="mss-tree-title mss-tree-desc">
+  <title id="mss-tree-title">四叶子 Merkle 树：认证叶子 2</title>
+  <desc id="mss-tree-desc">从叶子 L2 出发，使用认证节点 L3 计算父节点 P1，再使用认证节点 P0 计算 Root。青色实线标识重建路径，橙色虚线标识认证路径提供的兄弟节点。其余叶子为 L0 和 L1。</desc>
+  <defs>
+    <marker id="mss-tree-arrow-path" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0L7 3.5L0 7Z" fill="#0f766e"/>
+    </marker>
+    <marker id="mss-tree-arrow-auth" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto" markerUnits="strokeWidth">
+      <path d="M0 0L7 3.5L0 7Z" fill="#b45309"/>
+    </marker>
+  </defs>
+  <rect width="600" height="390" rx="14" fill="#ffffff"/>
+  <g fill="none" stroke="#94a3b8" stroke-width="2.5">
+    <path d="M75 240L150 182"/>
+    <path d="M225 240L150 182"/>
+  </g>
+  <g fill="none" stroke="#0f766e" stroke-width="3.5" marker-end="url(#mss-tree-arrow-path)">
+    <path d="M375 240L450 184"/>
+    <path d="M450 120L302 80"/>
+  </g>
+  <g fill="none" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5" marker-end="url(#mss-tree-arrow-auth)">
+    <path d="M150 120L298 80"/>
+    <path d="M525 240L450 184"/>
+  </g>
+  <g font-family="system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif" text-anchor="middle">
+    <rect x="235" y="20" width="130" height="60" rx="9" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/>
+    <text x="300" y="47" font-size="24" font-weight="700" fill="#134e4a">Root</text>
+    <text x="300" y="69" font-size="18" fill="#134e4a">重建根</text>
+
+    <rect x="80" y="120" width="140" height="62" rx="9" fill="#fff7ed" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5"/>
+    <text x="150" y="147" font-size="24" font-weight="700" fill="#78350f">P0</text>
+    <text x="150" y="171" font-size="20" fill="#78350f">认证节点</text>
+
+    <rect x="380" y="120" width="140" height="62" rx="9" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/>
+    <text x="450" y="147" font-size="24" font-weight="700" fill="#134e4a">P1</text>
+    <text x="450" y="171" font-size="20" fill="#134e4a">重建节点</text>
+
+    <rect x="10" y="240" width="130" height="74" rx="9" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="75" y="270" font-size="24" font-weight="700" fill="#334155">L0</text>
+    <text x="75" y="299" font-size="20" fill="#475569">叶子 0</text>
+
+    <rect x="160" y="240" width="130" height="74" rx="9" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
+    <text x="225" y="270" font-size="24" font-weight="700" fill="#334155">L1</text>
+    <text x="225" y="299" font-size="20" fill="#475569">叶子 1</text>
+
+    <rect x="310" y="240" width="130" height="74" rx="9" fill="#ccfbf1" stroke="#0f766e" stroke-width="3"/>
+    <text x="375" y="270" font-size="24" font-weight="700" fill="#134e4a">L2</text>
+    <text x="375" y="299" font-size="20" fill="#134e4a">叶子 2 · 起点</text>
+
+    <rect x="460" y="240" width="130" height="74" rx="9" fill="#fff7ed" stroke="#b45309" stroke-width="3" stroke-dasharray="7 5"/>
+    <text x="525" y="270" font-size="24" font-weight="700" fill="#78350f">L3</text>
+    <text x="525" y="299" font-size="20" fill="#78350f">叶子 3</text>
+    <text x="525" y="340" font-size="20" fill="#78350f">认证节点</text>
+
+    <text x="300" y="375" font-size="20" fill="#334155">叶子 2 的认证路径：先取 L3，再取 P0</text>
+  </g>
+</svg>

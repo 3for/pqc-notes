@@ -6,6 +6,7 @@ from pathlib import Path
 from threading import Thread
 from urllib.parse import unquote, urlsplit
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -17,6 +18,7 @@ ARTICLE = "basic-lattice-cryptography-notes-zh"
 BLOCKCHAIN = "blockchain/pqc-migration"
 LAMPORT = "hash-based-pqc/lamport"
 WOTS = "hash-based-pqc/WOTS"
+MSS = "hash-based-pqc/MSS"
 PREFIX = "/pqc-notes/"
 
 
@@ -277,6 +279,163 @@ def check_wots(page, browser, base, screenshots, local_only):
     return dimensions
 
 
+def check_mss(page, browser, base, screenshots, local_only):
+    page.set_viewport_size({"width": 1440, "height": 1000})
+    page.goto(base + MSS + "/", wait_until="networkidle")
+    source = (ROOT / "docs" / f"{MSS}.md").read_text()
+    display_count = len(re.findall(r"^\$\$[ \t]*$", source, re.M)) // 2
+    check_math(page, minimum=display_count)
+    article = page.locator("article")
+    assert article.locator("h1").count() == 1
+    assert article.locator("div.arithmatex").count() == display_count > 0
+    assert "$" not in article.inner_text(), "MSS contains unparsed dollar-delimited math."
+    headings = article.locator("h1, h2, h3, h4, h5, h6").evaluate_all(
+        "nodes => nodes.map(n => ({level:Number(n.tagName.slice(1)), text:n.textContent.trim()}))"
+    )
+    for previous, current in zip(headings, headings[1:]):
+        assert current["level"] <= previous["level"] + 1, headings
+    section_ids = set(article.locator("[id]").evaluate_all("nodes => nodes.map(n => n.id)"))
+    section_links = page.locator("article a[href^='#'], .md-sidebar a[href^='#']").evaluate_all(
+        "nodes => nodes.map(n => n.getAttribute('href')).filter(href => href.length > 1)"
+    )
+    assert section_links and all(unquote(link[1:]) in section_ids for link in section_links), section_links
+    first_section = article.locator("h2[id]").first.get_attribute("id")
+    article.locator(f"a[href='#{first_section}']").first.click()
+    assert unquote(urlsplit(page.url).fragment) == first_section
+    diagram = article.locator("img[src$='mss-tree.svg']")
+    assert diagram.count() == 1 and diagram.is_visible()
+    assert diagram.evaluate("node => node.complete && node.naturalWidth > 0"), "MSS tree SVG did not load."
+
+    # Independently reproduce the documented byte encoding, including domain tags.
+    def parent(left, right):
+        return hashlib.sha256(b"\x01" + left + right).digest()
+
+    leaves = [hashlib.sha256(b"\x00" + f"MSS demo public key {index}".encode("utf-8")).digest() for index in range(4)]
+    parents = [parent(leaves[0], leaves[1]), parent(leaves[2], leaves[3])]
+    trusted_root = parent(*parents)
+    values = {"Root": trusted_root, "P0": parents[0], "P1": parents[1],
+              **{f"L{index}": value for index, value in enumerate(leaves)}}
+    demo = page.locator("[data-mss-demo]")
+    demo.wait_for(state="visible")
+    buttons = [demo.locator(f"[data-mss-leaf='{index}']") for index in range(4)]
+    tamper = demo.locator("[data-mss-tamper]")
+
+    def check_digest(locator, expected):
+        assert locator.get_attribute("title") == expected.hex()
+        assert locator.text_content().strip() == expected.hex()[:8]
+
+    def check_state(index, changed=False):
+        parent_index = index // 2
+        sibling = index ^ 1
+        sibling_parent = parent_index ^ 1
+        first_auth = bytearray(leaves[sibling])
+        if changed:
+            first_auth[0] ^= 1
+        first_auth = bytes(first_auth)
+        rebuilt_parent = parent(leaves[index], first_auth) if index % 2 == 0 else parent(first_auth, leaves[index])
+        rebuilt_root = parent(rebuilt_parent, parents[sibling_parent]) if parent_index == 0 else parent(parents[sibling_parent], rebuilt_parent)
+        page.wait_for_function("expected => { const root = document.querySelector('[data-mss-demo]'); return root?.dataset.selectedLeaf === expected.index && root?.dataset.tampered === expected.changed && !root.hasAttribute('aria-busy') && root.querySelector('[data-mss-computed-root]')?.title === expected.hash; }",
+                               arg={"index": str(index), "changed": str(changed).lower(), "hash": rebuilt_root.hex()})
+        for position, button in enumerate(buttons):
+            assert button.get_attribute("aria-pressed") == str(position == index).lower()
+        assert tamper.is_checked() == changed
+        authentication = {f"L{sibling}", f"P{sibling_parent}"}
+        path = {f"L{index}", f"P{parent_index}", "Root"}
+        assert demo.locator("[data-mss-node]").count() == 7
+        for name, value in values.items():
+            node = demo.locator(f"[data-mss-node='{name}']")
+            expected_role = "authentication" if name in authentication else "path" if name in path else "other"
+            assert node.get_attribute("data-role") == expected_role
+            check_digest(node.locator("code"), value)
+        check_digest(demo.locator("[data-mss-auth='0']"), first_auth)
+        check_digest(demo.locator("[data-mss-auth='1']"), parents[sibling_parent])
+        check_digest(demo.locator("[data-mss-step-hash='0']"), rebuilt_parent)
+        check_digest(demo.locator("[data-mss-step-hash='1']"), rebuilt_root)
+        check_digest(demo.locator("[data-mss-expected-root]"), trusted_root)
+        check_digest(demo.locator("[data-mss-computed-root]"), rebuilt_root)
+        leaf_names = [f"L{2 * parent_index}", f"L{2 * parent_index + 1}"]
+        if changed:
+            leaf_names[sibling % 2] += "*"
+        parent_names = ["P0′", "P1"] if parent_index == 0 else ["P0", "P1′"]
+        assert demo.locator("[data-mss-step='0']").get_attribute("data-order") == ",".join(leaf_names)
+        assert demo.locator("[data-mss-step='1']").get_attribute("data-order") == ",".join(parent_names)
+        assert demo.locator("[data-mss-result]").get_attribute("data-valid") == str(not changed).lower()
+        assert (rebuilt_root == trusted_root) == (not changed)
+
+    check_state(2)
+    for index in range(4):
+        buttons[index].click()
+        check_state(index)
+        tamper.check()
+        check_state(index, changed=True)
+        tamper.uncheck()
+        check_state(index)
+    buttons[0].focus()
+    buttons[0].press("Enter")
+    check_state(0)
+    buttons[3].focus()
+    buttons[3].press("Space")
+    check_state(3)
+    tamper.focus()
+    tamper.press("Space")
+    check_state(3, changed=True)
+    tamper.press("Space")
+    check_state(3)
+    buttons[2].click()
+    check_state(2)
+
+    def capture(mode):
+        if screenshots:
+            demo.screenshot(path=str(screenshots / f"mss-{mode}.png"),
+                            style=".md-header, .md-tabs, .md-top { visibility: hidden !important; }")
+
+    capture("desktop")
+    mobile_dimensions = []
+    for width in (390, 320):
+        page.set_viewport_size({"width": width, "height": 844})
+        page.wait_for_function("document.documentElement.scrollWidth <= innerWidth + 1")
+        dimensions = page.evaluate("({viewport:innerWidth, page:document.documentElement.scrollWidth})")
+        assert dimensions["page"] <= width + 1, dimensions
+        assert demo.evaluate("node => node.scrollWidth <= node.clientWidth + 1"), "MSS demo overflows."
+        assert diagram.evaluate("node => node.getBoundingClientRect().width <= innerWidth"), "MSS static tree overflows."
+        buttons[1].click()
+        check_state(1)
+        tamper.check()
+        check_state(1, changed=True)
+        tamper.uncheck()
+        buttons[2].click()
+        check_state(2)
+        capture(f"mobile-{width}")
+        mobile_dimensions.append(dimensions)
+    scheme = page.locator("body").get_attribute("data-md-color-scheme")
+    page.locator("body").evaluate("node => node.setAttribute('data-md-color-scheme', 'slate')")
+    tamper.check()
+    check_state(2, changed=True)
+    capture("dark-invalid")
+    tamper.uncheck()
+    check_state(2)
+    capture("dark")
+    page.locator("body").evaluate("(node, scheme) => node.setAttribute('data-md-color-scheme', scheme)", scheme)
+
+    fallback_context = browser.new_context(java_script_enabled=False)
+    try:
+        fallback_context.route("**/*", local_only)
+        fallback = fallback_context.new_page()
+        response = fallback.goto(base + MSS + "/", wait_until="networkidle")
+        assert response.status == 200
+        assert fallback.locator("[data-mss-demo]").count() == 1
+        assert fallback.locator("[data-mss-demo]").is_hidden()
+        static_tree = fallback.locator("article img[src$='mss-tree.svg']")
+        assert static_tree.is_visible() and static_tree.evaluate("node => node.complete && node.naturalWidth > 0")
+        assert fallback.locator("article .arithmatex").first.is_visible()
+        assert fallback.locator("article div.arithmatex").count() == display_count
+        assert fallback.locator("article table").first.is_visible()
+    finally:
+        fallback_context.close()
+    print("MSS formulas, anchors, SVG, four independent SHA-256 proofs, tampering, keyboard, themes, mobile and no-JS fallback passed.", flush=True)
+    return mobile_dimensions
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--screenshots", type=Path)
@@ -402,6 +561,7 @@ def main():
                 page.screenshot(path=str(args.screenshots / "home-desktop.png"))
             lamport_dimensions = check_lamport(page, browser, base, args.screenshots, local_only)
             wots_dimensions = check_wots(page, browser, base, args.screenshots, local_only)
+            mss_dimensions = check_mss(page, browser, base, args.screenshots, local_only)
             assert not problems, problems
             print(json.dumps({"math_elements": formula_count, "equation_numbers": len(tags),
                               "images": len(images), "search_queries": queries,
@@ -412,6 +572,8 @@ def main():
                               "lamport_keyboard_reset_and_no_js": "passed",
                               "wots_chain_positions": 16, "wots_parameters": [4, 16, 256],
                               "wots_mobile_width": wots_dimensions, "wots_checksum_and_no_js": "passed",
+                              "mss_leaf_proofs": 4, "mss_mobile_widths": mss_dimensions,
+                              "mss_sha256_tampering_and_no_js": "passed",
                               "external_requests": 0}, ensure_ascii=False))
             browser.close()
     finally:

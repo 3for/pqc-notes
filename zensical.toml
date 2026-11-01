@@ -19,12 +19,14 @@ extra_css = [
   "assets/stylesheets/extra.css",
   "assets/stylesheets/lamport-demo.css",
   "assets/stylesheets/wots-demo.css",
+  "assets/stylesheets/mss-demo.css",
 ]
 extra_javascript = [
   "assets/javascripts/mathjax.js",
   "assets/vendor/mathjax/tex-chtml.js",
   "assets/javascripts/lamport-demo.js",
   "assets/javascripts/wots-demo.js",
+  "assets/javascripts/mss-demo.js",
 ]
 
 [project.theme]

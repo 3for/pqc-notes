@@ -76,6 +76,7 @@ macOS 上已有 Google Chrome 时可省略 Chromium 安装；也可以通过 `PQ
 | PQC 与区块链专题 | 首页到专题及首篇的阅读入口、章节导航、资料来源跳转、中文搜索和手机宽度 |
 | Lamport 预备文章（暂未加入导航） | 公式、全部 16 种摘要对应的签名选择、键盘操作、重置、深浅主题、手机宽度和无 JavaScript 时的静态示例 |
 | WOTS 预备文章（暂未加入导航） | 公式与章节锚点、全部 16 个链位置、Checksum 对照与输入校验、参数计算、键盘操作、重置、深浅主题、手机宽度和无 JavaScript 时的静态示例 |
+| MSS 预备文章（暂未加入导航） | 公式与章节锚点、四叶认证路径与左右顺序、SHA-256 独立计算对照、篡改检测、键盘操作、深浅主题、手机宽度和无 JavaScript 时的静态树图 |
 
 检查脚本针对已收录的具体页面建立，新增页面仍需打开预览；调整文章标题、章节、引用或检索内容时，同步更新脚本中的路径、定位文字和样例。修改水印或主题时，还应人工检查深浅主题、文字选择和链接点击。
 
@@ -95,6 +96,7 @@ macOS 上已有 Google Chrome 时可省略 Chromium 安装；也可以通过 `PQ
 | 公式加载配置 | `docs/assets/javascripts/mathjax.js` |
 | Lamport 交互演示 | `docs/assets/javascripts/lamport-demo.js`、`docs/assets/stylesheets/lamport-demo.css`；正文保留静态表格与公式，脚本挂载到 `[data-lamport-demo]` |
 | WOTS 交互演示 | `docs/assets/javascripts/wots-demo.js`、`docs/assets/stylesheets/wots-demo.css`；哈希链、Checksum 与参数对比各自挂载，正文保留静态示例 |
+| MSS 交互演示 | `docs/assets/javascripts/mss-demo.js`、`docs/assets/stylesheets/mss-demo.css`；挂载到 `[data-mss-demo]`，正文保留静态树图 `docs/assets/images/mss-tree.svg`、认证路径表和公式 |
 | 页面模板 | `overrides/` |
 
 依赖变更应同时更新 `pyproject.toml` 和 `uv.lock`，并说明变更原因。不要提交 `site/`、`.venv/`、`.cache/` 等生成目录。

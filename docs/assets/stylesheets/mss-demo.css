@@ -1,0 +1,233 @@
+.mss-demo {
+  min-width: 0;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  background: var(--md-default-bg-color);
+}
+
+.mss-demo .mss-demo__title {
+  margin: 0 0 0.5rem;
+  font-weight: 650;
+}
+
+.mss-demo .mss-demo__hint {
+  margin: 0.6rem 0 0;
+  color: var(--md-default-fg-color--light);
+  font-size: 0.7rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.mss-demo .mss-demo__choices {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.mss-demo .mss-demo__leaf-button {
+  min-width: 0;
+  min-height: 2.2rem;
+  padding: 0.3rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  font: inherit;
+  cursor: pointer;
+}
+
+.mss-demo .mss-demo__leaf-button[aria-pressed="true"] {
+  border-color: var(--md-primary-fg-color);
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+  font-weight: 700;
+}
+
+.mss-demo :is(button, input):focus-visible {
+  outline: 3px solid var(--md-accent-fg-color);
+  outline-offset: 3px;
+}
+
+.mss-demo .mss-demo__tree {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(3, 5rem);
+  gap: 1.5rem 0.4rem;
+  margin-top: 0.75rem;
+}
+
+.mss-demo .mss-demo__connectors {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--md-default-fg-color--lighter);
+  stroke-width: 1.5;
+  pointer-events: none;
+}
+
+.mss-demo .mss-demo__node {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.3rem 0.1rem;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  border-radius: 0.25rem;
+  background: var(--md-default-bg-color);
+  font-size: 0.75rem;
+}
+
+.mss-demo .mss-demo__node[data-mss-node="Root"] {
+  grid-column: 1 / -1;
+  justify-self: center;
+  width: 8rem;
+  max-width: 100%;
+}
+
+.mss-demo .mss-demo__node[data-mss-node="P0"] {
+  grid-column: 1 / 3;
+  justify-self: center;
+  width: 8rem;
+  max-width: 100%;
+}
+
+.mss-demo .mss-demo__node[data-mss-node="P1"] {
+  grid-column: 3 / 5;
+  justify-self: center;
+  width: 8rem;
+  max-width: 100%;
+}
+
+.mss-demo .mss-demo__node[data-role="path"] {
+  border: 2px solid var(--md-primary-fg-color);
+  background: color-mix(in srgb, var(--md-primary-fg-color) 10%, var(--md-default-bg-color));
+}
+
+.mss-demo .mss-demo__node[data-role="authentication"] {
+  border: 2px dashed var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent);
+}
+
+.mss-demo .mss-demo__node-role {
+  font-size: 0.6rem;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.mss-demo .mss-demo__digest {
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.mss-demo .mss-demo__node .mss-demo__digest {
+  font-size: 0.55rem;
+}
+
+.mss-demo .mss-demo__tamper-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.6;
+  cursor: pointer;
+}
+
+.mss-demo .mss-demo__tamper-label input {
+  appearance: auto;
+  flex: 0 0 auto;
+  width: 0.9rem;
+  height: 0.9rem;
+  margin-top: 0.15rem;
+  accent-color: var(--md-primary-fg-color);
+  cursor: pointer;
+}
+
+.mss-demo .mss-demo__proof {
+  margin-top: 0.75rem;
+}
+
+.mss-demo .mss-demo__section-title {
+  margin: 0 0 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.mss-demo .mss-demo__authentication {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.4rem;
+}
+
+.mss-demo .mss-demo__auth-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+  padding: 0.4rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+}
+
+.mss-demo .mss-demo__steps {
+  margin: 0.65rem 0 0 1.2rem;
+  font-size: 0.7rem;
+  overflow-wrap: anywhere;
+}
+
+.mss-demo .mss-demo__steps li {
+  padding-left: 0;
+  margin: 0.4rem 0;
+}
+
+.mss-demo .mss-demo__formula {
+  font-variant-numeric: tabular-nums;
+}
+
+.mss-demo .mss-demo__summary {
+  margin-top: 0.75rem;
+  padding: 0.65rem;
+  border-radius: 0.25rem;
+  background: var(--md-code-bg-color);
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+
+.mss-demo .mss-demo__result {
+  margin: 0 0 0.4rem;
+  font-weight: 650;
+}
+
+@media (max-width: 30em) {
+  .mss-demo {
+    padding: 0.6rem;
+  }
+
+  .mss-demo .mss-demo__choices {
+    font-size: 0.7rem;
+  }
+
+  .mss-demo .mss-demo__node .mss-demo__digest {
+    font-size: 0.5rem;
+    white-space: nowrap;
+  }
+
+  .mss-demo .mss-demo__authentication {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

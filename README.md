@@ -88,7 +88,7 @@ uv run --frozen python scripts/check_browser.py
 
 已安装 Google Chrome 的 macOS 环境可以省略 Chromium 安装步骤。浏览器检查覆盖基础格密码学长文的公式、图片、脚注、搜索和手机宽度，以及区块链专题的阅读入口、章节导航、资料来源跳转、中文搜索和手机宽度。
 
-还会检查 [Lamport](docs/hash-based-pqc/lamport.md) 和 [WOTS](docs/hash-based-pqc/WOTS.md) 两篇预备文章的公式与演示：Lamport 的全部 16 种摘要，WOTS 的全部 16 个链位置、Checksum 对照和参数计算，以及键盘操作、重置、深浅主题、手机布局和无 JavaScript 时的静态示例。两篇文章暂未加入专题导航。浏览器检查目前在本地运行，未接入 CI。检查范围及注意事项见[贡献指南](CONTRIBUTING.md)。
+还会检查 [Lamport](docs/hash-based-pqc/lamport.md)、[WOTS](docs/hash-based-pqc/WOTS.md) 和 [MSS](docs/hash-based-pqc/MSS.md) 预备文章的公式与演示：Lamport 的全部 16 种摘要，WOTS 的全部 16 个链位置、Checksum 对照和参数计算，以及 MSS 的四叶认证路径、SHA-256 独立计算对照和篡改检测。检查覆盖键盘操作、深浅主题、手机布局和无 JavaScript 时的静态示例。这些文章暂未加入专题导航。浏览器检查目前在本地运行，未接入 CI。检查范围及注意事项见[贡献指南](CONTRIBUTING.md)。
 
 ## GitHub Pages 发布
 
